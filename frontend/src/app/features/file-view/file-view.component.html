@@ -1,0 +1,56 @@
+<div class="file-view-container">
+  @if (isLoading()) {
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  }
+
+  @if (file(); as f) {
+    <div class="header">
+      <div class="title-section">
+        <button mat-icon-button [routerLink]="['/projects', id()]" matTooltip="Back to Project">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <div>
+          <h1>{{ f.filename }}</h1>
+          <div class="metadata">
+            <span class="badge">{{ f.language }}</span>
+            <span class="info-item"><mat-icon>storage</mat-icon> {{ formatBytes(f.sizeBytes) }}</span>
+            <span class="info-item"><mat-icon>history</mat-icon> {{ f.uploadedAt | date:'medium' }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="actions">
+        <button mat-stroked-button color="primary" (click)="detectComplexity()" [disabled]="isAiLoading()" matTooltip="Analyze code complexity">
+          <mat-icon>psychology</mat-icon>
+          Detect Complexity
+        </button>
+        <button mat-flat-button color="accent" (click)="generateDoc()" [disabled]="isAiLoading()" matTooltip="Generate AI documentation">
+          <mat-icon>auto_awesome</mat-icon>
+          Generate Docs
+        </button>
+      </div>
+    </div>
+
+    <mat-card class="code-card">
+      <mat-card-header>
+        <mat-card-title>Source Code</mat-card-title>
+        <mat-card-subtitle>Checksum: {{ f.checksum }}</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <app-code-viewer [code]="f.content" [language]="f.language"></app-code-viewer>
+      </mat-card-content>
+    </mat-card>
+  }
+</div>
+
+<ng-template #complexityDialog>
+  <h2 mat-dialog-title>Complexity Detection</h2>
+  <mat-dialog-content>
+    @if (complexityResult(); as res) {
+      <p><strong>Score:</strong> {{ res.score }}</p>
+      <p><strong>Details:</strong> {{ res.details }}</p>
+    }
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Close</button>
+  </mat-dialog-actions>
+</ng-template>

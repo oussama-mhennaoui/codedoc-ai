@@ -1,0 +1,207 @@
+{
+  "title": "Summarize Project Response",
+  "description": "Schema for the project summary generation output",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "executiveSummary",
+    "technologyStack",
+    "architectureOverview",
+    "keyFeatures",
+    "moduleBreakdown",
+    "dataFlow",
+    "securityConsiderations",
+    "buildAndDeployment",
+    "technicalDebtAndRisks",
+    "recommendations"
+  ],
+  "properties": {
+    "executiveSummary": {
+      "type": "string",
+      "description": "2-3 sentences describing the project's purpose and value proposition"
+    },
+    "technologyStack": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["languages", "frameworks", "libraries", "tools"],
+      "properties": {
+        "languages": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Programming languages used"
+        },
+        "frameworks": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Frameworks used"
+        },
+        "libraries": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Key libraries and dependencies"
+        },
+        "tools": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Build, CI/CD, and development tools"
+        }
+      }
+    },
+    "architectureOverview": {
+      "type": "string",
+      "description": "Overall system architecture (layers, modules, design patterns)"
+    },
+    "keyFeatures": {
+      "type": "array",
+      "description": "Main functional capabilities of the project",
+      "items": {
+        "type": "string"
+      }
+    },
+    "moduleBreakdown": {
+      "type": "array",
+      "description": "Description of each major module/component and its responsibility",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["moduleName", "responsibility", "keyFiles"],
+        "properties": {
+          "moduleName": {
+            "type": "string",
+            "description": "Name of the module or component"
+          },
+          "responsibility": {
+            "type": "string",
+            "description": "Primary responsibility of this module"
+          },
+          "keyFiles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Key source files belonging to this module"
+          }
+        }
+      }
+    },
+    "dataFlow": {
+      "type": "string",
+      "description": "How data moves through the system (entry points, processing, storage, output)"
+    },
+    "securityConsiderations": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["authentication", "authorization", "dataProtection", "otherMeasures"],
+      "properties": {
+        "authentication": {
+          "type": "string",
+          "description": "Authentication mechanisms in place"
+        },
+        "authorization": {
+          "type": "string",
+          "description": "Authorization and access control mechanisms"
+        },
+        "dataProtection": {
+          "type": "string",
+          "description": "Data encryption, anonymization, and protection measures"
+        },
+        "otherMeasures": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Any additional security measures"
+        }
+      }
+    },
+    "buildAndDeployment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["buildProcess", "testingStrategy", "deploymentMethod", "environmentVariables"],
+      "properties": {
+        "buildProcess": {
+          "type": "string",
+          "description": "How the project is compiled and packaged"
+        },
+        "testingStrategy": {
+          "type": "string",
+          "description": "Testing approach (unit, integration, E2E, etc.)"
+        },
+        "deploymentMethod": {
+          "type": "string",
+          "description": "How and where the application is deployed"
+        },
+        "environmentVariables": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["name", "purpose"],
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Environment variable name"
+              },
+              "purpose": {
+                "type": "string",
+                "description": "What this variable controls"
+              }
+            }
+          }
+        }
+      }
+    },
+    "technicalDebtAndRisks": {
+      "type": "array",
+      "description": "Areas that may need refactoring, potential issues, or maintainability concerns",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["description", "severity"],
+        "properties": {
+          "description": {
+            "type": "string",
+            "description": "Description of the debt or risk"
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["low", "medium", "high"],
+            "description": "Severity level of the risk"
+          }
+        }
+      }
+    },
+    "recommendations": {
+      "type": "array",
+      "description": "Actionable suggestions for improvement",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["title", "description", "priority"],
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Short recommendation title"
+          },
+          "description": {
+            "type": "string",
+            "description": "Detailed explanation of the recommendation"
+          },
+          "priority": {
+            "type": "string",
+            "enum": ["low", "medium", "high"],
+            "description": "Implementation priority"
+          }
+        }
+      }
+    }
+  }
+}

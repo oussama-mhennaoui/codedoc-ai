@@ -1,0 +1,103 @@
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main-toolbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  height: 64px;
+  padding: 0 24px;
+  background: #3f51b5;
+
+  .toolbar-content {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: white;
+    font-weight: 700;
+    font-size: 20px;
+    gap: 12px;
+
+    .brand-icon {
+      font-size: 28px;
+      height: 28px;
+      width: 28px;
+    }
+
+    &:hover {
+      opacity: 0.9;
+    }
+  }
+
+  .spacer {
+    flex: 1 1 auto;
+  }
+
+  .user-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: 20px;
+    padding: 0 12px;
+    
+    .username {
+      font-weight: 500;
+      max-width: 150px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    mat-icon {
+      margin: 0;
+    }
+  }
+}
+
+.main-content {
+  flex: 1;
+  background-color: #f8fafc;
+  
+  &.has-toolbar {
+    padding-top: 64px;
+  }
+}
+
+::ng-deep {
+  .mat-mdc-menu-panel {
+    border-radius: 12px !important;
+    margin-top: 8px;
+    min-width: 180px !important;
+  }
+
+  .mat-mdc-menu-item {
+    padding: 0 16px !important;
+    
+    .mdc-list-item__label {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    mat-icon {
+      margin: 0;
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+      color: #64748b;
+    }
+  }
+}

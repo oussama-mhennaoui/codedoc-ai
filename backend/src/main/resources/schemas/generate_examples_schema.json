@@ -1,0 +1,257 @@
+{
+  "title": "Generate Examples Response",
+  "description": "Schema for the code usage examples generation output",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "overview",
+    "prerequisites",
+    "basicUsage",
+    "commonScenarios",
+    "advancedUsage",
+    "errorHandling",
+    "integrationExamples"
+  ],
+  "properties": {
+    "overview": {
+      "type": "string",
+      "description": "Brief introduction describing what the examples demonstrate and who they are for"
+    },
+    "prerequisites": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["dependencies", "setupSteps", "environmentVariables"],
+      "properties": {
+        "dependencies": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of required dependencies or imports needed to run the examples"
+        },
+        "setupSteps": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Any setup or initialization steps required before running examples"
+        },
+        "environmentVariables": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["name", "value"],
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Environment variable name"
+              },
+              "value": {
+                "type": "string",
+                "description": "Example or placeholder value"
+              }
+            }
+          }
+        }
+      }
+    },
+    "basicUsage": {
+      "type": "array",
+      "description": "The most common or simplest use cases",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "title", "scenario", "prerequisites", "code", "expectedOutput"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for this example"
+          },
+          "title": {
+            "type": "string",
+            "description": "Clear, descriptive title"
+          },
+          "scenario": {
+            "type": "string",
+            "description": "Explanation of when and why to use this pattern"
+          },
+          "prerequisites": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Setup or prior state needed for this example"
+          },
+          "code": {
+            "type": "string",
+            "description": "Full, runnable code snippet including all imports"
+          },
+          "expectedOutput": {
+            "type": "string",
+            "description": "Expected output, return value, or behavior description"
+          }
+        }
+      }
+    },
+    "commonScenarios": {
+      "type": "array",
+      "description": "Typical real-world patterns users encounter in production",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "title", "scenario", "prerequisites", "code", "expectedOutput"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for this example"
+          },
+          "title": {
+            "type": "string",
+            "description": "Clear, descriptive title"
+          },
+          "scenario": {
+            "type": "string",
+            "description": "Explanation of when and why to use this pattern"
+          },
+          "prerequisites": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Setup or prior state needed for this example"
+          },
+          "code": {
+            "type": "string",
+            "description": "Full, runnable code snippet including all imports"
+          },
+          "expectedOutput": {
+            "type": "string",
+            "description": "Expected output, return value, or behavior description"
+          }
+        }
+      }
+    },
+    "advancedUsage": {
+      "type": "array",
+      "description": "Non-trivial cases, configuration options, and feature combinations",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "title", "scenario", "prerequisites", "code", "expectedOutput"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for this example"
+          },
+          "title": {
+            "type": "string",
+            "description": "Clear, descriptive title"
+          },
+          "scenario": {
+            "type": "string",
+            "description": "Explanation of when and why to use this pattern"
+          },
+          "prerequisites": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Setup or prior state needed for this example"
+          },
+          "code": {
+            "type": "string",
+            "description": "Full, runnable code snippet including all imports"
+          },
+          "expectedOutput": {
+            "type": "string",
+            "description": "Expected output, return value, or behavior description"
+          }
+        }
+      }
+    },
+    "errorHandling": {
+      "type": "array",
+      "description": "How to properly handle errors, exceptions, and edge cases",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "title", "errorScenario", "prerequisites", "code", "expectedOutput"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for this example"
+          },
+          "title": {
+            "type": "string",
+            "description": "Clear, descriptive title"
+          },
+          "errorScenario": {
+            "type": "string",
+            "description": "Description of the error or edge case being demonstrated"
+          },
+          "prerequisites": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Setup or prior state needed to trigger the error scenario"
+          },
+          "code": {
+            "type": "string",
+            "description": "Full code snippet showing proper error handling"
+          },
+          "expectedOutput": {
+            "type": "string",
+            "description": "Expected error behavior, message, or recovery result"
+          }
+        }
+      }
+    },
+    "integrationExamples": {
+      "type": "array",
+      "description": "Using this module with other common libraries or modules from the same project",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "title", "scenario", "integratedModules", "prerequisites", "code", "expectedOutput"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for this example"
+          },
+          "title": {
+            "type": "string",
+            "description": "Clear, descriptive title"
+          },
+          "scenario": {
+            "type": "string",
+            "description": "Explanation of the integration use case"
+          },
+          "integratedModules": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Names of modules or libraries being integrated"
+          },
+          "prerequisites": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Setup or prior state needed for this integration example"
+          },
+          "code": {
+            "type": "string",
+            "description": "Full, runnable code snippet demonstrating the integration"
+          },
+          "expectedOutput": {
+            "type": "string",
+            "description": "Expected output or behavior of the integrated code"
+          }
+        }
+      }
+    }
+  }
+}

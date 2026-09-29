@@ -1,0 +1,181 @@
+<div class="project-view-container">
+  @if (isLoading()) {
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  }
+
+  @if (project(); as p) {
+    <div class="header">
+      <div class="title-section">
+        <button mat-icon-button routerLink="/dashboard" matTooltip="Back to Dashboard">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <div>
+          <h1>{{ p.name }}</h1>
+          <div class="metadata">
+            <span class="badge">{{ p.language }}</span>
+            <span class="timestamp">Last updated: {{ p.updatedAt | date:'medium' }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="actions">
+        <button mat-stroked-button color="primary" (click)="openEditDialog()">
+          <mat-icon>edit</mat-icon>
+          Edit
+        </button>
+      </div>
+    </div>
+
+    <mat-card class="description-card">
+      <mat-card-content>
+        <p>{{ p.description || 'No description provided.' }}</p>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-tab-group class="content-tabs">
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon class="tab-icon">description</mat-icon>
+          <span>Files</span>
+        </ng-template>
+
+        <div class="files-tab-content">
+          <div class="table-actions">
+            <h2>Source Files ({{ files().length }})</h2>
+            <button mat-flat-button color="primary" (click)="openUploadDialog()">
+              <mat-icon>add</mat-icon>
+              Upload File
+            </button>
+          </div>
+
+          @if (isFilesLoading()) {
+            <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+          }
+
+          <div class="table-container">
+            <table mat-table [dataSource]="files()" class="full-width-table">
+              
+              <ng-container matColumnDef="filename">
+                <th mat-header-cell *matHeaderCellDef>Filename</th>
+                <td mat-cell *matCellDef="let file">
+                  <div class="filename-cell">
+                    <mat-icon>insert_drive_file</mat-icon>
+                    <span>{{ file.filename }}</span>
+                  </div>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="language">
+                <th mat-header-cell *matHeaderCellDef>Language</th>
+                <td mat-cell *matCellDef="let file">
+                  <span class="language-tag">{{ file.language }}</span>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="size">
+                <th mat-header-cell *matHeaderCellDef>Size</th>
+                <td mat-cell *matCellDef="let file">{{ formatBytes(file.sizeBytes) }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="uploadedAt">
+                <th mat-header-cell *matHeaderCellDef>Uploaded At</th>
+                <td mat-cell *matCellDef="let file">{{ file.uploadedAt | date:'medium' }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef class="actions-header"></th>
+                <td mat-cell *matCellDef="let file" class="actions-cell">
+                  <button mat-icon-button color="warn" (click)="deleteFile($event, file.id)" matTooltip="Delete File">
+                    <mat-icon>delete_outline</mat-icon>
+                  </button>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="viewFile(row.id)" class="file-row"></tr>
+            </table>
+
+            @if (files().length === 0 && !isFilesLoading()) {
+              <div class="empty-state">
+                <mat-icon>cloud_upload</mat-icon>
+                <p>No files uploaded yet.</p>
+                <button mat-stroked-button color="primary" (click)="openUploadDialog()">
+                  Upload your first file
+                </button>
+              </div>
+            }
+          </div>
+        </div>
+      </mat-tab>
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon class="tab-icon">auto_stories</mat-icon>
+          <span>Documentation ({{ docs().length }})</span>
+        </ng-template>
+
+        <div class="files-tab-content">
+          <div class="table-actions">
+            <h2>Generated Docs ({{ docs().length }})</h2>
+          </div>
+
+          @if (isDocsLoading()) {
+            <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+          }
+
+          <div class="table-container">
+            <table mat-table [dataSource]="docs()" class="full-width-table">
+
+              <ng-container matColumnDef="filename">
+                <th mat-header-cell *matHeaderCellDef>Source File</th>
+                <td mat-cell *matCellDef="let doc">
+                  <div class="filename-cell">
+                    <mat-icon>description</mat-icon>
+                    <span>{{ doc.sourceFileId }}</span>
+                  </div>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef>Status</th>
+                <td mat-cell *matCellDef="let doc">
+                  <span class="language-tag" [class.status-success]="doc.status === 'SUCCESS'" [class.status-failed]="doc.status === 'FAILED'">
+                    {{ doc.status }}
+                  </span>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="model">
+                <th mat-header-cell *matHeaderCellDef>Model</th>
+                <td mat-cell *matCellDef="let doc">{{ doc.modelUsed }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="createdAt">
+                <th mat-header-cell *matHeaderCellDef>Generated At</th>
+                <td mat-cell *matCellDef="let doc">{{ doc.createdAt | date:'medium' }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef class="actions-header"></th>
+                <td mat-cell *matCellDef="let doc" class="actions-cell">
+                  <button mat-icon-button color="primary" (click)="viewDoc(doc.id)" matTooltip="Open Doc Editor">
+                    <mat-icon>open_in_new</mat-icon>
+                  </button>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="docsColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: docsColumns;" (click)="viewDoc(row.id)" class="file-row"></tr>
+            </table>
+
+            @if (docs().length === 0 && !isDocsLoading()) {
+              <div class="empty-state">
+                <mat-icon>auto_stories</mat-icon>
+                <p>No documentation generated yet.</p>
+                <p>Open a file and click <strong>Generate Docs</strong> to get started.</p>
+              </div>
+            }
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  }
+</div>

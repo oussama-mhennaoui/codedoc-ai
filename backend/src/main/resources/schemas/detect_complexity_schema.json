@@ -1,0 +1,256 @@
+{
+  "title": "Detect Complexity Response",
+  "description": "Schema for the code complexity detection output",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "complexityScore",
+    "overallAssessment",
+    "cyclomaticComplexity",
+    "cognitiveComplexity",
+    "codeStructure",
+    "readability",
+    "duplication",
+    "couplingAndCohesion",
+    "errorHandling",
+    "testingFeasibility",
+    "issues",
+    "recommendations"
+  ],
+  "properties": {
+    "complexityScore": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10,
+      "description": "Overall complexity score from 1 (trivial) to 10 (very complex)"
+    },
+    "overallAssessment": {
+      "type": "string",
+      "description": "Narrative summary of the overall complexity assessment"
+    },
+    "cyclomaticComplexity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["score", "details"],
+      "properties": {
+        "score": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10,
+          "description": "Cyclomatic complexity score 1-10"
+        },
+        "details": {
+          "type": "string",
+          "description": "Analysis of decision points, nested conditionals, and loop depth"
+        }
+      }
+    },
+    "cognitiveComplexity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["score", "details"],
+      "properties": {
+        "score": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10,
+          "description": "Cognitive complexity score 1-10"
+        },
+        "details": {
+          "type": "string",
+          "description": "Analysis of how hard the code is for humans to understand"
+        }
+      }
+    },
+    "codeStructure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["score", "details"],
+      "properties": {
+        "score": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10,
+          "description": "Code structure score 1-10"
+        },
+        "details": {
+          "type": "string",
+          "description": "Analysis of function/class length, nesting depth, and organization"
+        }
+      }
+    },
+    "readability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["score", "details"],
+      "properties": {
+        "score": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10,
+          "description": "Readability score 1-10"
+        },
+        "details": {
+          "type": "string",
+          "description": "Analysis of naming clarity, consistency, and self-documenting code"
+        }
+      }
+    },
+    "duplication": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["score", "details"],
+      "properties": {
+        "score": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10,
+          "description": "Duplication score 1-10 (1 = no duplication, 10 = heavy duplication)"
+        },
+        "details": {
+          "type": "string",
+          "description": "Analysis of DRY principle violations and repeated patterns"
+        }
+      }
+    },
+    "couplingAndCohesion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["score", "details"],
+      "properties": {
+        "score": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10,
+          "description": "Coupling and cohesion score 1-10"
+        },
+        "details": {
+          "type": "string",
+          "description": "Analysis of module interdependencies and responsibility focus"
+        }
+      }
+    },
+    "errorHandling": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["score", "details"],
+      "properties": {
+        "score": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10,
+          "description": "Error handling score 1-10"
+        },
+        "details": {
+          "type": "string",
+          "description": "Analysis of exception handling quality and input validation"
+        }
+      }
+    },
+    "testingFeasibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["score", "details"],
+      "properties": {
+        "score": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10,
+          "description": "Testing feasibility score 1-10 (1 = easy, 10 = very hard)"
+        },
+        "details": {
+          "type": "string",
+          "description": "Analysis of how easy or hard it would be to write unit tests"
+        }
+      }
+    },
+    "issues": {
+      "type": "array",
+      "description": "List of specific issues identified during analysis",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "title", "description", "severity", "location"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the issue"
+          },
+          "title": {
+            "type": "string",
+            "description": "Short title summarizing the issue"
+          },
+          "description": {
+            "type": "string",
+            "description": "Detailed description of the issue"
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["low", "medium", "high"],
+            "description": "Impact severity of the issue"
+          },
+          "location": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["scope"],
+            "properties": {
+              "functionName": {
+                "type": "string",
+                "description": "Affected function or method name (if applicable)"
+              },
+              "className": {
+                "type": "string",
+                "description": "Affected class name (if applicable)"
+              },
+              "lineStart": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Starting line number (if available)"
+              },
+              "lineEnd": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Ending line number (if available)"
+              },
+              "scope": {
+                "type": "string",
+                "description": "General scope or area of the codebase affected"
+              }
+            }
+          }
+        }
+      }
+    },
+    "recommendations": {
+      "type": "array",
+      "description": "Specific, actionable recommendations to reduce complexity and improve quality",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["title", "description", "severity", "relatedIssueIds"],
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Short title for the recommendation"
+          },
+          "description": {
+            "type": "string",
+            "description": "Detailed explanation of what should be done and why"
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["low", "medium", "high"],
+            "description": "Priority/severity of the recommendation"
+          },
+          "relatedIssueIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "IDs of issues this recommendation addresses"
+          }
+        }
+      }
+    }
+  }
+}

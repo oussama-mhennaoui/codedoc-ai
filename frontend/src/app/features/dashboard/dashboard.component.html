@@ -1,0 +1,100 @@
+<div class="dashboard-container">
+  <div class="header">
+    <div class="title-section">
+      <h1>My Projects</h1>
+      <p class="subtitle">Manage and organize your documentation projects</p>
+    </div>
+    <button mat-flat-button color="primary" (click)="openCreateDialog()" class="add-button">
+      <mat-icon>add</mat-icon>
+      <span>New Project</span>
+    </button>
+  </div>
+
+  @if (isLoading()) {
+    <mat-progress-bar mode="indeterminate" class="loader"></mat-progress-bar>
+  }
+
+  <div class="content-card mat-elevation-z2">
+    <div class="table-container">
+      <table mat-table [dataSource]="projects()" class="full-width-table">
+        
+        <!-- Name Column -->
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>
+            <div class="header-content"><mat-icon>folder</mat-icon> Project Name</div>
+          </th>
+          <td mat-cell *matCellDef="let project">
+            <div class="project-name-cell">
+              <span [class.archived]="project.archived" class="project-name">{{ project.name }}</span>
+              @if (project.archived) {
+                <span class="badge-archived">Archived</span>
+              }
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Language Column -->
+        <ng-container matColumnDef="language">
+          <th mat-header-cell *matHeaderCellDef>
+            <div class="header-content"><mat-icon>code</mat-icon> Language</div>
+          </th>
+          <td mat-cell *matCellDef="let project">
+            <span class="language-tag">{{ project.language }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Updated At Column -->
+        <ng-container matColumnDef="updatedAt">
+          <th mat-header-cell *matHeaderCellDef>
+            <div class="header-content"><mat-icon>history</mat-icon> Last Updated</div>
+          </th>
+          <td mat-cell *matCellDef="let project">{{ project.updatedAt | date:'medium' }}</td>
+        </ng-container>
+
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef class="actions-header">Actions</th>
+          <td mat-cell *matCellDef="let project" class="actions-cell">
+            <div class="action-buttons">
+              <button mat-icon-button color="primary" [routerLink]="['/projects', project.id]" matTooltip="Open Project">
+                <mat-icon>visibility</mat-icon>
+              </button>
+              
+              <button mat-icon-button color="accent" (click)="openEditDialog(project)" matTooltip="Edit Project">
+                <mat-icon>edit</mat-icon>
+              </button>
+              
+              @if (!project.archived) {
+                <button mat-icon-button color="accent" (click)="archiveProject(project)" matTooltip="Archive Project">
+                  <mat-icon>archive</mat-icon>
+                </button>
+              } @else {
+                <button mat-icon-button (click)="unarchiveProject(project)" matTooltip="Unarchive Project">
+                  <mat-icon>unarchive</mat-icon>
+                </button>
+              }
+
+              <button mat-icon-button color="warn" (click)="deleteProject(project)" matTooltip="Delete Project">
+                <mat-icon>delete_outline</mat-icon>
+              </button>
+            </div>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="project-row"></tr>
+      </table>
+
+      @if (isEmpty()) {
+        <div class="empty-state">
+          <mat-icon class="empty-icon">folder_off</mat-icon>
+          <h3>No projects found</h3>
+          <p>Create your first project to get started with documentation!</p>
+          <button mat-stroked-button color="primary" (click)="openCreateDialog()" class="mt-16">
+            <mat-icon>add</mat-icon> Create Project
+          </button>
+        </div>
+      }
+    </div>
+  </div>
+</div>

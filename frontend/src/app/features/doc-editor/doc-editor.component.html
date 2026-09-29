@@ -1,0 +1,115 @@
+<div class="doc-editor-container">
+  @if (isLoading()) {
+    <div class="loading-overlay">
+      <mat-spinner></mat-spinner>
+    </div>
+  }
+
+  <header class="editor-header">
+    <div class="header-title">
+      <h2>{{ doc()?.title || 'Loading Document...' }}</h2>
+    </div>
+    <div class="header-actions">
+      <button mat-button [matMenuTriggerFor]="exportMenu">
+        <mat-icon>download</mat-icon>
+        Export
+      </button>
+      <mat-menu #exportMenu="matMenu">
+        <button mat-menu-item (click)="exportDoc('pdf')">PDF</button>
+        <button mat-menu-item (click)="exportDoc('markdown')">Markdown</button>
+        <button mat-menu-item (click)="exportDoc('html')">HTML</button>
+      </mat-menu>
+    </div>
+  </header>
+
+  <div class="editor-layout">
+    <!-- Left Panel: Section List -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h3>Sections</h3>
+        <button mat-icon-button color="primary" (click)="addSection()" [disabled]="isSaving()">
+          <mat-icon>add</mat-icon>
+        </button>
+      </div>
+
+      <div cdkDropList class="section-list" (cdkDropListDropped)="drop($event)">
+        @for (section of sections(); track section.id) {
+          <div class="section-item" 
+               cdkDrag 
+               [class.active]="selectedSection()?.id === section.id"
+               (click)="selectSection(section)">
+            <mat-icon cdkDragHandle class="drag-handle">drag_indicator</mat-icon>
+            <span class="section-title">{{ section.title || 'Untitled Section' }}</span>
+            <button mat-icon-button color="warn" class="delete-btn" (click)="deleteSection(section.id, $event)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        }
+        @empty {
+          <div class="empty-state">No sections found.</div>
+        }
+      </div>
+    </aside>
+
+    <!-- Right Panel: Editor -->
+    <main class="main-content">
+      @if (selectedSection()) {
+        <div class="editor-area">
+          <form [formGroup]="editorForm" class="editor-form">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Section Title</mat-label>
+              <input matInput formControlName="title">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width content-field">
+              <mat-label>Content</mat-label>
+              <textarea matInput formControlName="content" cdkTextareaAutosize #autosize="cdkTextareaAutosize" cdkAutosizeMinRows="15"></textarea>
+            </mat-form-field>
+
+            <div class="form-actions">
+              <button mat-raised-button color="primary" (click)="saveSection()" [disabled]="editorForm.invalid || isSaving()">
+                <mat-icon>save</mat-icon> Save Changes
+              </button>
+            </div>
+          </form>
+
+          <!-- Comments Section -->
+          <div class="comments-section">
+            <h3>Comments</h3>
+            <div class="comments-list">
+              @for (comment of comments(); track comment.id) {
+                <div class="comment">
+                  <div class="comment-header">
+                    <strong>{{ comment.authorName || 'Unknown User' }}</strong>
+                    <span class="date">{{ comment.createdAt | date:'short' }}</span>
+                  </div>
+                  <div class="comment-content">{{ comment.content }}</div>
+                </div>
+              }
+              @empty {
+                <div class="empty-state">No comments yet.</div>
+              }
+            </div>
+
+            <form [formGroup]="commentForm" class="add-comment-form">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Add a comment</mat-label>
+                <textarea matInput formControlName="content" rows="2"></textarea>
+              </mat-form-field>
+              <div class="comment-actions">
+                <button mat-button color="primary" (click)="addComment()" [disabled]="commentForm.invalid">
+                  Post Comment
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      } @else {
+        <div class="empty-state main-empty">
+          <mat-icon>description</mat-icon>
+          <p>Select a section to edit or create a new one.</p>
+        </div>
+      }
+    </main>
+  </div>
+</div>

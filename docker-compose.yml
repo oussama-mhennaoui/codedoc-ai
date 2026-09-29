@@ -9,7 +9,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-codedoc}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-codedoc}
     ports:
-      - "5432:5432"
+      - "15432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -19,7 +19,9 @@ services:
       retries: 10
 
   backend:
-    build: ./backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.local
     container_name: codedoc-backend
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/codedoc
@@ -29,7 +31,7 @@ services:
       JWT_SECRET: ${JWT_SECRET}
       SPRING_PROFILES_ACTIVE: dev
     ports:
-      - "8080:8080"
+      - "8081:8081"
     depends_on:
       db:
         condition: service_healthy

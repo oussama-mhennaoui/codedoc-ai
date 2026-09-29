@@ -1,0 +1,154 @@
+{
+  "title": "Generate Documentation Response",
+  "description": "Schema for the documentation generation output",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "overview",
+    "architecture",
+    "components",
+    "publicApi",
+    "dependencies",
+    "usageExamples",
+    "edgeCasesAndLimitations",
+    "performanceConsiderations"
+  ],
+  "properties": {
+    "overview": {
+      "type": "string",
+      "description": "High-level description of what this file/module does"
+    },
+    "architecture": {
+      "type": "string",
+      "description": "How the code is organized, key design patterns used"
+    },
+    "components": {
+      "type": "array",
+      "description": "Detailed description of each class, interface, and function",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "type", "responsibility"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the component"
+          },
+          "type": {
+            "type": "string",
+            "description": "Component type (class, interface, function, enum, etc.)"
+          },
+          "responsibility": {
+            "type": "string",
+            "description": "What this component is responsible for"
+          }
+        }
+      }
+    },
+    "publicApi": {
+      "type": "array",
+      "description": "List of all public methods/functions",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["signature", "parameters", "returnType", "description"],
+        "properties": {
+          "signature": {
+            "type": "string",
+            "description": "Full method/function signature"
+          },
+          "parameters": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["name", "type", "description"],
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Parameter name"
+                },
+                "type": {
+                  "type": "string",
+                  "description": "Parameter type"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "Parameter description"
+                }
+              }
+            }
+          },
+          "returnType": {
+            "type": "string",
+            "description": "Return type of the method/function"
+          },
+          "description": {
+            "type": "string",
+            "description": "What the method/function does"
+          }
+        }
+      }
+    },
+    "dependencies": {
+      "type": "array",
+      "description": "External libraries and internal modules used",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "usage"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Dependency name"
+          },
+          "usage": {
+            "type": "string",
+            "description": "How this dependency is used in the code"
+          }
+        }
+      }
+    },
+    "usageExamples": {
+      "type": "array",
+      "description": "Practical examples showing how to use the main features",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["title", "description", "code", "expectedOutput"],
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Short title for the example"
+          },
+          "description": {
+            "type": "string",
+            "description": "What this example demonstrates"
+          },
+          "code": {
+            "type": "string",
+            "description": "Runnable code snippet"
+          },
+          "expectedOutput": {
+            "type": "string",
+            "description": "Expected output or behavior description"
+          }
+        }
+      }
+    },
+    "edgeCasesAndLimitations": {
+      "type": "array",
+      "description": "Known constraints, error scenarios, and boundary conditions",
+      "items": {
+        "type": "string"
+      }
+    },
+    "performanceConsiderations": {
+      "type": "array",
+      "description": "Performance-relevant aspects or optimizations",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

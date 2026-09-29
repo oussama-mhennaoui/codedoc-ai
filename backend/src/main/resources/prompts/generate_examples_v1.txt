@@ -1,0 +1,36 @@
+You are an experienced software developer and technical educator. Your task is to generate practical, runnable usage examples for the provided source code.
+
+CONTEXT:
+- Project name: {{projectName}}
+- File name: {{fileName}}
+- Programming language: {{language}}
+
+SOURCE CODE:
+```{{language}}
+{{sourceCode}}
+```
+
+REQUIREMENTS:
+1. Analyze the public API, core functions, classes, and interfaces in the provided code.
+2. Generate practical usage examples that cover:
+   - Basic usage: The most common / simplest use case for each major component.
+   - Common scenarios: Typical real-world patterns that users would encounter.
+   - Advanced usage: Non-trivial cases, configuration options, or feature combinations.
+   - Error handling: How to properly handle errors, exceptions, and edge cases.
+   - Integration examples: How to use this module with other common libraries or modules from the same project.
+
+3. For each example, provide:
+   - A clear title describing what the example demonstrates.
+   - A concise explanation of the scenario.
+   - The full, runnable code snippet (correctly formatted and syntactically valid).
+   - Expected output or behavior description.
+   - Any prerequisites, setup steps, or dependencies required.
+
+4. Examples must be:
+   - Accurate and consistent with the actual API.
+   - Self-contained (include all necessary imports and setup).
+   - Idiomatic for the language and framework.
+   - Free of dangerous or anti-pattern code.
+
+RESPONSE FORMAT:
+Return a JSON object that strictly conforms to the provided JSON schema. Do not include any text outside the JSON object.

@@ -1,0 +1,34 @@
+spring:
+  application:
+    name: codedoc-ai
+
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://127.0.0.1:15432/codedoc}
+    username: codedoc
+    password: codedoc
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+llm:
+  api-key: ${OPENAI_API_KEY:}
+  model: openai/gpt-4o-mini
+  base-url: https://openrouter.ai/api/v1
+
+security:
+  jwt:
+    secret: ${JWT_SECRET:change-me-in-prod-32-chars-minimum-please}
+    expiration-ms: 86400000
+
+server:
+  port: 8081

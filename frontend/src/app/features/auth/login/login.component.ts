@@ -39,8 +39,8 @@ export class LoginComponent {
   hidePassword = true;
 
   loginForm = new FormGroup({
-    username: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
-    password: new FormControl('', { nonNullable: true, validators: [Validators.required] })
+    username: new FormControl('demo', { nonNullable: true, validators: [Validators.required] }),
+    password: new FormControl('password', { nonNullable: true, validators: [Validators.required] })
   });
 
   onSubmit() {

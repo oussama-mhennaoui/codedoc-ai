@@ -8,6 +8,13 @@
       <mat-card-subtitle>Sign in to your account</mat-card-subtitle>
     </mat-card-header>
     <mat-card-content>
+      <div class="demo-info">
+        <mat-icon>info</mat-icon>
+        <div>
+          <strong>Demo Credentials:</strong><br>
+          Username: <code>demo</code> | Password: <code>password</code>
+        </div>
+      </div>
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Username</mat-label>

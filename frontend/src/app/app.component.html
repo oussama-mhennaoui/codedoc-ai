@@ -1,5 +1,5 @@
 <div class="app-container">
-  @if (authService.user()) {
+  @if (authService.user() && !isLandingPage()) {
     <mat-toolbar color="primary" class="main-toolbar mat-elevation-z4">
       <div class="toolbar-content">
         <a routerLink="/dashboard" class="brand">
@@ -32,7 +32,7 @@
     </mat-toolbar>
   }
 
-  <main class="main-content" [class.has-toolbar]="authService.user()">
+  <main class="main-content" [class.has-toolbar]="authService.user() && !isLandingPage()">
     <router-outlet />
   </main>
 </div>

@@ -6,8 +6,22 @@
   }
 
   <header class="editor-header">
-    <div class="header-title">
-      <h2>{{ doc()?.title || 'Loading Document...' }}</h2>
+    <div class="header-left">
+      <button mat-icon-button class="back-button" (click)="goBack()" title="Back to Projects">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div class="header-title">
+        <h2>{{ doc()?.title || 'Loading Document...' }}</h2>
+        @if (doc()?.sourceFileName) {
+          <div class="file-info">
+            <mat-icon class="file-icon">description</mat-icon>
+            <span class="file-name">{{ doc()!.sourceFileName }}</span>
+            @if (doc()?.sourceFileLanguage) {
+              <span class="file-language">({{ doc()!.sourceFileLanguage }})</span>
+            }
+          </div>
+        }
+      </div>
     </div>
     <div class="header-actions">
       <button mat-button [matMenuTriggerFor]="exportMenu">

@@ -8,6 +8,9 @@ import java.util.List;
 public record GeneratedDocDto(
     Long id,
     Long sourceFileId,
+    String sourceFileName,
+    String sourceFileLanguage,
+    Long sourceFileSizeBytes,
     String modelUsed,
     String promptVersion,
     JsonNode rawResponse,

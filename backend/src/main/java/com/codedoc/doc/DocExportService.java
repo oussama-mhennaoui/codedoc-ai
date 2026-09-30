@@ -62,7 +62,55 @@ public class DocExportService {
             document.close();
             return baos.toByteArray();
         } catch (Exception e) {
-            throw new RuntimeException("Error generating PDF", e);
+            throw new RuntimeException("Error generating PDF: " + e.getMessage(), e);
         }
+    }
+
+    public byte[] toHtml(GeneratedDoc generatedDoc) {
+        StringBuilder html = new StringBuilder();
+        
+        html.append("<!DOCTYPE html>\n");
+        html.append("<html lang=\"en\">\n");
+        html.append("<head>\n");
+        html.append("  <meta charset=\"UTF-8\">\n");
+        html.append("  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n");
+        html.append("  <title>").append(escapeHtml(generatedDoc.getSourceFile().getFilename())).append("</title>\n");
+        html.append("  <style>\n");
+        html.append("    body { font-family: Arial, sans-serif; line-height: 1.6; max-width: 900px; margin: 0 auto; padding: 20px; }\n");
+        html.append("    h1 { color: #333; border-bottom: 2px solid #3f51b5; padding-bottom: 10px; }\n");
+        html.append("    h2 { color: #555; margin-top: 20px; margin-bottom: 10px; }\n");
+        html.append("    p { color: #666; }\n");
+        html.append("  </style>\n");
+        html.append("</head>\n");
+        html.append("<body>\n");
+        
+        html.append("  <h1>").append(escapeHtml(generatedDoc.getSourceFile().getFilename())).append("</h1>\n");
+        
+        if (generatedDoc.getSections() != null) {
+            List<DocSection> sections = generatedDoc.getSections().stream()
+                .sorted(Comparator.comparing(DocSection::getOrderIndex))
+                .toList();
+            
+            for (DocSection section : sections) {
+                html.append("  <h2>").append(escapeHtml(section.getTitle())).append("</h2>\n");
+                html.append("  <p>").append(escapeHtml(section.getContent())).append("</p>\n");
+            }
+        }
+        
+        html.append("</body>\n");
+        html.append("</html>\n");
+        
+        return html.toString().getBytes();
+    }
+
+    private String escapeHtml(String text) {
+        if (text == null) {
+            return "";
+        }
+        return text.replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+                .replace("\"", "&quot;")
+                .replace("'", "&#39;");
     }
 }

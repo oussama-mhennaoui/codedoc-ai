@@ -1,0 +1,303 @@
+// ============================================================================
+// Angular Material Overrides
+// ============================================================================
+
+@import "tokens";
+
+// ========== mat-card ==========
+.mat-mdc-card {
+  background-color: var(--color-bg) !important;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-sm) !important;
+  padding: var(--space-6) !important;
+
+  &:hover {
+    box-shadow: var(--shadow-md) !important;
+  }
+}
+
+// ========== Buttons ==========
+.mat-mdc-button,
+.mat-mdc-raised-button {
+  border-radius: var(--radius-md) !important;
+  font-weight: var(--font-weight-medium) !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+  font-size: var(--font-size-base) !important;
+  padding: var(--space-2) var(--space-4) !important;
+  transition: all var(--transition-base) !important;
+}
+
+.mat-mdc-raised-button {
+  box-shadow: var(--shadow-sm) !important;
+
+  &:hover {
+    box-shadow: var(--shadow-md) !important;
+  }
+}
+
+.mat-mdc-raised-button.mat-primary {
+  background-color: var(--color-primary) !important;
+  color: white !important;
+
+  &:hover {
+    background-color: var(--color-primary-hover) !important;
+  }
+}
+
+.mat-mdc-stroked-button {
+  border-color: var(--color-border-strong) !important;
+  color: var(--color-text) !important;
+
+  &:hover {
+    background-color: var(--color-bg-muted) !important;
+  }
+}
+
+.mat-mdc-icon-button {
+  --mdc-icon-button-state-layer-size: 40px;
+  border-radius: 50%;
+
+  &:hover {
+    background-color: var(--color-bg-muted) !important;
+  }
+}
+
+// ========== Form Fields ==========
+.mat-mdc-form-field {
+  width: 100%;
+
+  .mat-mdc-form-field-wrapper {
+    padding-bottom: var(--space-2) !important;
+  }
+
+  .mat-mdc-text-field-wrapper {
+    padding-bottom: 0 !important;
+  }
+
+  .mdc-text-field--outlined {
+    --mdc-outlined-text-field-outline-color: var(--color-border);
+
+    &:hover {
+      --mdc-outlined-text-field-outline-color: var(--color-border-strong);
+    }
+
+    &.mdc-text-field--focused {
+      --mdc-outlined-text-field-outline-color: var(--color-primary);
+    }
+  }
+
+  .mat-mdc-form-field-label {
+    color: var(--color-text-muted) !important;
+  }
+
+  .mat-mdc-text-field-wrapper {
+    padding-bottom: 1.25em !important;
+  }
+}
+
+.mat-mdc-input-element {
+  color: var(--color-text) !important;
+  caret-color: var(--color-primary);
+
+  &::placeholder {
+    color: var(--color-text-muted) !important;
+  }
+}
+
+// ========== Table ==========
+.mat-mdc-table {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  width: 100%;
+  border-collapse: collapse;
+
+  // Header row
+  .mat-mdc-header-cell {
+    background-color: var(--color-bg-subtle);
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text);
+    font-weight: var(--font-weight-semibold);
+    padding: var(--space-3) var(--space-4);
+  }
+
+  // Body rows
+  .mat-mdc-cell {
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text);
+    padding: var(--space-3) var(--space-4);
+  }
+
+  .mat-mdc-row {
+    transition: background-color var(--transition-base);
+
+    &:hover {
+      background-color: var(--color-bg-subtle);
+    }
+  }
+
+  // Footer row
+  .mat-mdc-footer-cell {
+    background-color: var(--color-bg-subtle);
+    border-top: 1px solid var(--color-border);
+    color: var(--color-text-muted);
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-sm);
+    padding: var(--space-3) var(--space-4);
+  }
+}
+
+// ========== Snackbar ==========
+.mat-mdc-snack-bar-container {
+  background-color: var(--color-text) !important;
+  color: var(--color-bg) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-lg) !important;
+
+  .mat-mdc-snack-bar-label {
+    font-weight: var(--font-weight-medium);
+  }
+
+  .mat-mdc-button {
+    color: var(--color-bg) !important;
+  }
+}
+
+// Error snackbar
+.mat-mdc-snack-bar-container.error-snackbar {
+  background-color: var(--color-danger) !important;
+}
+
+// ========== Dialog ==========
+.mat-mdc-dialog-container {
+  background-color: var(--color-bg) !important;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl) !important;
+  box-shadow: var(--shadow-lg) !important;
+
+  .mat-mdc-dialog-title {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text);
+  }
+
+  .mat-mdc-dialog-content {
+    color: var(--color-text-muted);
+  }
+}
+
+// ========== Menu ==========
+.mat-mdc-menu-panel {
+  background-color: var(--color-bg) !important;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-md) !important;
+}
+
+.mat-mdc-menu-item {
+  color: var(--color-text) !important;
+  font-size: var(--font-size-base) !important;
+
+  &:hover {
+    background-color: var(--color-bg-muted) !important;
+  }
+
+  &.mat-mdc-menu-item-highlighted {
+    background-color: var(--color-primary-subtle) !important;
+    color: var(--color-primary) !important;
+  }
+}
+
+// ========== Toolbar ==========
+.mat-toolbar {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+
+  &.mat-primary {
+    background-color: var(--color-primary);
+    color: white;
+  }
+}
+
+// ========== Tabs ==========
+.mat-mdc-tab-group {
+  .mat-mdc-tab {
+    color: var(--color-text-muted) !important;
+
+    &.mat-mdc-tab-active {
+      color: var(--color-primary) !important;
+    }
+  }
+
+  .mat-mdc-tab-label-content {
+    font-weight: var(--font-weight-medium);
+  }
+
+  .mdc-tab-indicator__content {
+    border-color: var(--color-primary) !important;
+  }
+}
+
+// ========== Checkbox ==========
+.mat-mdc-checkbox {
+  .mdc-checkbox__background {
+    border-color: var(--color-border-strong);
+  }
+
+  &.mat-mdc-checkbox-checked {
+    .mdc-checkbox__background {
+      background-color: var(--color-primary) !important;
+      border-color: var(--color-primary) !important;
+    }
+  }
+}
+
+// ========== Radio Button ==========
+.mat-mdc-radio-button {
+  .mdc-radio__outer-circle {
+    border-color: var(--color-border-strong);
+  }
+
+  &.mat-mdc-radio-checked {
+    .mdc-radio__outer-circle {
+      border-color: var(--color-primary);
+    }
+
+    .mdc-radio__inner-circle {
+      background-color: var(--color-primary);
+    }
+  }
+}
+
+// ========== Select ==========
+.mat-mdc-select-panel {
+  background-color: var(--color-bg) !important;
+  border: 1px solid var(--color-border);
+}
+
+.mat-mdc-select {
+  color: var(--color-text) !important;
+}
+
+// ========== Progress Bar ==========
+.mat-mdc-progress-bar {
+  height: 2px;
+
+  .mdc-linear-progress__bar-inner {
+    background-color: var(--color-primary) !important;
+  }
+
+  .mdc-linear-progress__buffer-bar {
+    background-color: var(--color-bg-muted) !important;
+  }
+}
+
+// ========== Spinner ==========
+.mat-mdc-progress-spinner {
+  circle {
+    stroke: var(--color-primary) !important;
+  }
+}

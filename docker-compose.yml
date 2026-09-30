@@ -41,6 +41,9 @@ services:
     container_name: codedoc-frontend
     ports:
       - "4200:4200"
+    environment:
+      - NODE_ENV=development
+      - CHROME_DRIVER_BIN=/usr/bin/chromium-browser
     depends_on:
       - backend
 

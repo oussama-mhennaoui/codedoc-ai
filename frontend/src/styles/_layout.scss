@@ -1,0 +1,244 @@
+// ============================================================================
+// Layout Utilities
+// ============================================================================
+
+@import "tokens";
+
+// ========== Container ==========
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--space-6);
+  width: 100%;
+}
+
+.container-narrow {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 var(--space-6);
+  width: 100%;
+}
+
+.container-wide {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 var(--space-6);
+  width: 100%;
+}
+
+// ========== Flexbox Stack ==========
+.stack {
+  display: flex;
+  flex-direction: column;
+
+  & > * + * {
+    margin-top: var(--space-4);
+  }
+
+  &.stack-sm > * + * {
+    margin-top: var(--space-2);
+  }
+
+  &.stack-md > * + * {
+    margin-top: var(--space-4);
+  }
+
+  &.stack-lg > * + * {
+    margin-top: var(--space-6);
+  }
+
+  &.stack-xl > * + * {
+    margin-top: var(--space-8);
+  }
+}
+
+// ========== Flexbox Row ==========
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+
+  &.row-between {
+    justify-content: space-between;
+  }
+
+  &.row-center {
+    justify-content: center;
+  }
+
+  &.row-start {
+    justify-content: flex-start;
+  }
+
+  &.row-end {
+    justify-content: flex-end;
+  }
+
+  &.row-gap-sm {
+    gap: var(--space-2);
+  }
+
+  &.row-gap-md {
+    gap: var(--space-4);
+  }
+
+  &.row-gap-lg {
+    gap: var(--space-6);
+  }
+
+  &.row-items-start {
+    align-items: flex-start;
+  }
+
+  &.row-items-end {
+    align-items: flex-end;
+  }
+
+  &.row-items-baseline {
+    align-items: baseline;
+  }
+}
+
+// ========== Grid ==========
+.grid {
+  display: grid;
+  gap: var(--space-6);
+
+  &.grid-sm {
+    gap: var(--space-2);
+  }
+
+  &.grid-md {
+    gap: var(--space-4);
+  }
+
+  &.grid-lg {
+    gap: var(--space-8);
+  }
+}
+
+.grid-auto {
+  display: grid;
+  gap: var(--space-6);
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+
+  &.grid-cols-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  &.grid-cols-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  &.grid-cols-4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.grid-cols-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-6);
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.grid-cols-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-6);
+
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ========== Padding ==========
+.p-1 { padding: var(--space-1); }
+.p-2 { padding: var(--space-2); }
+.p-3 { padding: var(--space-3); }
+.p-4 { padding: var(--space-4); }
+.p-6 { padding: var(--space-6); }
+.p-8 { padding: var(--space-8); }
+
+.px-4 { padding-left: var(--space-4); padding-right: var(--space-4); }
+.py-4 { padding-top: var(--space-4); padding-bottom: var(--space-4); }
+.pt-4 { padding-top: var(--space-4); }
+.pb-4 { padding-bottom: var(--space-4); }
+.pl-4 { padding-left: var(--space-4); }
+.pr-4 { padding-right: var(--space-4); }
+
+// ========== Margin ==========
+.m-0 { margin: 0; }
+.m-1 { margin: var(--space-1); }
+.m-2 { margin: var(--space-2); }
+.m-3 { margin: var(--space-3); }
+.m-4 { margin: var(--space-4); }
+.m-6 { margin: var(--space-6); }
+.m-8 { margin: var(--space-8); }
+
+.mx-auto { margin-left: auto; margin-right: auto; }
+.my-auto { margin-top: auto; margin-bottom: auto; }
+
+.mx-4 { margin-left: var(--space-4); margin-right: var(--space-4); }
+.my-4 { margin-top: var(--space-4); margin-bottom: var(--space-4); }
+.mt-4 { margin-top: var(--space-4); }
+.mb-4 { margin-bottom: var(--space-4); }
+.ml-4 { margin-left: var(--space-4); }
+.mr-4 { margin-right: var(--space-4); }
+
+// ========== Display ==========
+.flex { display: flex; }
+.inline-flex { display: inline-flex; }
+.grid { display: grid; }
+.inline-block { display: inline-block; }
+.block { display: block; }
+.inline { display: inline; }
+.hidden { display: none; }
+
+// ========== Width & Height ==========
+.w-full { width: 100%; }
+.w-auto { width: auto; }
+.w-screen { width: 100vw; }
+
+.h-full { height: 100%; }
+.h-auto { height: auto; }
+.h-screen { height: 100vh; }
+
+.min-w-0 { min-width: 0; }
+.max-w-full { max-width: 100%; }
+
+// ========== Positioning ==========
+.relative { position: relative; }
+.absolute { position: absolute; }
+.fixed { position: fixed; }
+.sticky { position: sticky; }
+
+.inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
+.top-0 { top: 0; }
+.right-0 { right: 0; }
+.bottom-0 { bottom: 0; }
+.left-0 { left: 0; }
+
+// ========== Overflow ==========
+.overflow-auto { overflow: auto; }
+.overflow-hidden { overflow: hidden; }
+.overflow-x-auto { overflow-x: auto; }
+.overflow-y-auto { overflow-y: auto; }
+
+.truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

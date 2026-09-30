@@ -4,6 +4,7 @@ import com.codedoc.doc.dto.*;
 import com.codedoc.user.User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -112,19 +113,53 @@ public class DocController {
             @AuthenticationPrincipal User user) {
         
         GeneratedDoc docEntity = docService.getDocEntity(id, user);
+        String filename = docEntity.getSourceFile().getFilename();
         
-        if ("pdf".equalsIgnoreCase(format)) {
-            byte[] pdfBytes = docExportService.toPdf(docEntity);
-            return ResponseEntity.ok()
-                    .header("Content-Type", "application/pdf")
-                    .header("Content-Disposition", "attachment; filename=\"" + docEntity.getSourceFile().getFilename() + ".pdf\"")
-                    .body(pdfBytes);
-        } else {
-            String markdown = docExportService.toMarkdown(docEntity);
-            return ResponseEntity.ok()
-                    .header("Content-Type", "text/markdown")
-                    .header("Content-Disposition", "attachment; filename=\"" + docEntity.getSourceFile().getFilename() + ".md\"")
-                    .body(markdown.getBytes());
+        // Normalize format parameter (accept both 'markdown' and 'md')
+        String normalizedFormat = normalizeFormat(format);
+        
+        try {
+            if ("pdf".equalsIgnoreCase(normalizedFormat)) {
+                byte[] pdfBytes = docExportService.toPdf(docEntity);
+                return ResponseEntity.ok()
+                        .header("Content-Type", "application/pdf")
+                        .header("Content-Disposition", "attachment; filename=\"" + sanitizeFilename(filename) + ".pdf\"")
+                        .body(pdfBytes);
+            } else if ("html".equalsIgnoreCase(normalizedFormat)) {
+                byte[] htmlBytes = docExportService.toHtml(docEntity);
+                return ResponseEntity.ok()
+                        .header("Content-Type", "text/html; charset=UTF-8")
+                        .header("Content-Disposition", "attachment; filename=\"" + sanitizeFilename(filename) + ".html\"")
+                        .body(htmlBytes);
+            } else {
+                // Default to markdown for 'md', 'markdown', and unknown formats
+                String markdown = docExportService.toMarkdown(docEntity);
+                return ResponseEntity.ok()
+                        .header("Content-Type", "text/markdown; charset=UTF-8")
+                        .header("Content-Disposition", "attachment; filename=\"" + sanitizeFilename(filename) + ".md\"")
+                        .body(markdown.getBytes());
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error exporting document: " + e.getMessage(), e);
         }
+    }
+
+    private String normalizeFormat(String format) {
+        if (format == null) {
+            return "md";
+        }
+        // Accept 'markdown' as alias for 'md'
+        if ("markdown".equalsIgnoreCase(format)) {
+            return "md";
+        }
+        return format.toLowerCase();
+    }
+
+    private String sanitizeFilename(String filename) {
+        // Remove quotes and special characters that could break the header
+        if (filename == null) {
+            return "document";
+        }
+        return filename.replaceAll("[\"\\\\/<>:|?*]", "_");
     }
 }

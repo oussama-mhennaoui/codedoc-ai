@@ -12,6 +12,9 @@ public class DocMapper {
         return new GeneratedDocDto(
             doc.getId(),
             doc.getSourceFile().getId(),
+            doc.getSourceFile().getFilename(),
+            doc.getSourceFile().getLanguage(),
+            doc.getSourceFile().getSizeBytes(),
             doc.getModelUsed(),
             doc.getPromptVersion(),
             doc.getRawResponse(),

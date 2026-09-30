@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { MatButtonModule } from '@angular/material/button';
@@ -34,6 +34,7 @@ import { finalize } from 'rxjs';
 })
 export class DocEditorComponent implements OnInit {
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
   private docService = inject(DocService);
   private fb = inject(FormBuilder);
   private snackBar = inject(MatSnackBar);
@@ -203,22 +204,52 @@ export class DocEditorComponent implements OnInit {
   }
 
   exportDoc(format: string) {
+    // Normalize format for backend
+    const normalizedFormat = this.normalizeFormat(format);
+    const extension = this.getFileExtension(normalizedFormat);
+    
     this.showSuccess(`Exporting document as ${format.toUpperCase()}...`);
     
     // Using HttpClient to pass the Authorization header via interceptor
-    this.docService.exportDoc(this.docId(), format).subscribe({
+    this.docService.exportDoc(this.docId(), normalizedFormat).subscribe({
       next: (blob) => {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `${this.doc()?.title || 'document'}.${format}`;
+        a.download = `${this.doc()?.title || 'document'}.${extension}`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         window.URL.revokeObjectURL(url);
+        this.showSuccess('Document exported successfully');
       },
-      error: () => this.showError('Failed to export document')
+      error: (err) => {
+        console.error('Export error:', err);
+        this.showError('Failed to export document');
+      }
     });
+  }
+
+  private normalizeFormat(format: string): string {
+    // Normalize 'markdown' to 'md' for backend
+    if (format === 'markdown') {
+      return 'md';
+    }
+    return format.toLowerCase();
+  }
+
+  private getFileExtension(format: string): string {
+    switch (format.toLowerCase()) {
+      case 'pdf':
+        return 'pdf';
+      case 'html':
+        return 'html';
+      case 'md':
+      case 'markdown':
+        return 'md';
+      default:
+        return 'md';
+    }
   }
 
   private showSuccess(msg: string) {
@@ -227,5 +258,9 @@ export class DocEditorComponent implements OnInit {
 
   private showError(msg: string) {
     this.snackBar.open(msg, 'Close', { duration: 5000, panelClass: ['error-snackbar'] });
+  }
+
+  goBack() {
+    this.router.navigate(['/projects']);
   }
 }

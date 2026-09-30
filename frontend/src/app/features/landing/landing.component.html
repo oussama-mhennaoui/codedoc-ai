@@ -1,0 +1,208 @@
+<!-- Navbar -->
+<nav class="navbar" [class.scrolled]="isScrolled()">
+  <div class="navbar-content">
+    <!-- Left: Logo -->
+    <div class="navbar-brand">
+      <mat-icon class="brand-icon">description</mat-icon>
+      <span class="brand-text">CodeDoc AI</span>
+    </div>
+
+    <!-- Right: Buttons -->
+    <div class="navbar-actions">
+      @if (authService.user()) {
+        <button
+          mat-raised-button
+          color="primary"
+          (click)="goToDashboard()"
+          class="nav-button">
+          <mat-icon>dashboard</mat-icon>
+          Go to Dashboard
+        </button>
+      } @else {
+        <button
+          mat-button
+          class="nav-button nav-button-secondary"
+          (click)="goToLogin()">
+          Login
+        </button>
+        <button
+          mat-raised-button
+          color="primary"
+          (click)="goToRegister()"
+          class="nav-button">
+          Get Started
+        </button>
+      }
+    </div>
+  </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="hero">
+  <div class="hero-content">
+    <h1 class="hero-title">
+      Turn any code into clear documentation — in seconds.
+    </h1>
+    <p class="hero-subtitle">
+      CodeDoc AI reads your source files and generates structured, editable
+      technical documentation powered by AI.
+    </p>
+
+    <div class="hero-ctas">
+      <button
+        mat-raised-button
+        color="primary"
+        size="large"
+        (click)="goToRegister()"
+        class="cta-primary">
+        Get Started Free
+      </button>
+      <button
+        mat-stroked-button
+        class="cta-secondary"
+        (click)="scrollToFeatures()">
+        See how it works
+      </button>
+    </div>
+  </div>
+
+  <!-- Hero Illustration -->
+  <div class="hero-illustration">
+    <mat-card class="code-demo-card">
+      <div class="demo-columns">
+        <div class="demo-code">
+          <div class="code-label">Source Code</div>
+          <pre><code><span class="keyword">function</span> <span class="function">calculate</span>(a, b) {{ '{' }}
+  <span class="keyword">return</span> a + b;
+{{ '}' }}
+
+<span class="keyword">function</span> <span class="function">process</span>(data) {{ '{' }}
+  <span class="keyword">if</span> (!data) {{ '{' }}
+    <span class="keyword">throw</span> <span class="keyword">new</span> Error();
+  {{ '}' }}
+  <span class="keyword">return</span> format(data);
+{{ '}' }}
+</code></pre>
+        </div>
+
+        <div class="demo-divider">→</div>
+
+        <div class="demo-docs">
+          <div class="code-label">Generated Docs</div>
+          <div class="doc-content">
+            <h4>calculate(a, b)</h4>
+            <p>Performs addition of two numbers.</p>
+            <p><strong>Params:</strong> a, b (number)</p>
+            <p><strong>Returns:</strong> number</p>
+
+            <h4 style="margin-top: 16px;">process(data)</h4>
+            <p>Processes input data with validation.</p>
+            <p><strong>Throws:</strong> Error if data is null</p>
+          </div>
+        </div>
+      </div>
+    </mat-card>
+  </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section" id="features">
+  <h2 class="section-title">Key Features</h2>
+
+  <div class="features-grid">
+    <!-- Feature 1: Instant Documentation -->
+    <mat-card class="feature-card">
+      <div class="feature-icon">
+        <mat-icon>lightning_on</mat-icon>
+      </div>
+      <h3 class="feature-title">Instant Documentation</h3>
+      <p class="feature-description">
+        Upload a file, and CodeDoc AI instantly generates structured,
+        professional documentation with descriptions, parameters, and examples.
+      </p>
+    </mat-card>
+
+    <!-- Feature 2: Project Summaries -->
+    <mat-card class="feature-card">
+      <div class="feature-icon">
+        <mat-icon>summarize</mat-icon>
+      </div>
+      <h3 class="feature-title">Project Summaries</h3>
+      <p class="feature-description">
+        Get one-click overviews of entire codebases. Understand architecture,
+        dependencies, and key modules without diving into code.
+      </p>
+    </mat-card>
+
+    <!-- Feature 3: Complexity Insights -->
+    <mat-card class="feature-card">
+      <div class="feature-icon">
+        <mat-icon>insights</mat-icon>
+      </div>
+      <h3 class="feature-title">Complexity Insights</h3>
+      <p class="feature-description">
+        AI-powered analysis detects code smells, suggests improvements, and
+        highlights areas that may need refactoring or additional documentation.
+      </p>
+    </mat-card>
+  </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="how-it-works-section">
+  <h2 class="section-title">How It Works</h2>
+
+  <div class="steps-container">
+    <!-- Step 1 -->
+    <div class="step">
+      <div class="step-number">1</div>
+      <h3 class="step-title">Create a Project</h3>
+      <p class="step-description">Set up a new project in CodeDoc AI.</p>
+    </div>
+
+    <div class="step-divider">
+      <mat-icon>arrow_forward</mat-icon>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="step">
+      <div class="step-number">2</div>
+      <h3 class="step-title">Upload Your Files</h3>
+      <p class="step-description">Add source code files to your project.</p>
+    </div>
+
+    <div class="step-divider">
+      <mat-icon>arrow_forward</mat-icon>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="step">
+      <div class="step-number">3</div>
+      <h3 class="step-title">Generate & Edit</h3>
+      <p class="step-description">
+        AI generates docs. Customize, reorganize, and export.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="footer-content">
+    <div class="footer-left">
+      <p class="footer-text">CodeDoc AI © 2026</p>
+    </div>
+
+    <div class="footer-center">
+      <a href="#" class="footer-link">GitHub</a>
+      <span class="footer-divider">•</span>
+      <a href="#" class="footer-link">Documentation</a>
+      <span class="footer-divider">•</span>
+      <a href="#" class="footer-link">Contact</a>
+    </div>
+
+    <div class="footer-right">
+      <p class="footer-text">Built with Spring Boot + Angular + AI</p>
+    </div>
+  </div>
+</footer>

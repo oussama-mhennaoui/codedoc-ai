@@ -1,0 +1,284 @@
+// ============================================================================
+// Animations
+// ============================================================================
+
+@import "tokens";
+
+// ========== Keyframe Animations ==========
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@keyframes fade-in-fast {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fade-out-fast {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-left {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-right {
+  from {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes scale-out {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+// ========== Animation Utility Classes ==========
+
+.animate-fade-in {
+  animation: fade-in var(--transition-slow) both;
+}
+
+.animate-fade-out {
+  animation: fade-out var(--transition-slow) both;
+}
+
+.animate-fade-in-fast {
+  animation: fade-in-fast var(--transition-fast) both;
+}
+
+.animate-fade-out-fast {
+  animation: fade-out-fast var(--transition-fast) both;
+}
+
+.animate-slide-up {
+  animation: slide-up var(--transition-slow) both;
+}
+
+.animate-slide-down {
+  animation: slide-down var(--transition-slow) both;
+}
+
+.animate-slide-left {
+  animation: slide-left var(--transition-slow) both;
+}
+
+.animate-slide-right {
+  animation: slide-right var(--transition-slow) both;
+}
+
+.animate-scale-in {
+  animation: scale-in var(--transition-base) both;
+}
+
+.animate-scale-out {
+  animation: scale-out var(--transition-base) both;
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--color-bg-muted),
+    var(--color-bg-subtle),
+    var(--color-bg-muted)
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite;
+}
+
+// ========== Transition Utilities ==========
+
+.transition-none {
+  transition: none;
+}
+
+.transition-fast {
+  transition: all var(--transition-fast);
+}
+
+.transition-base {
+  transition: all var(--transition-base);
+}
+
+.transition-slow {
+  transition: all var(--transition-slow);
+}
+
+.transition-colors {
+  transition: background-color var(--transition-base),
+              border-color var(--transition-base),
+              color var(--transition-base);
+}
+
+.transition-opacity {
+  transition: opacity var(--transition-base);
+}
+
+.transition-transform {
+  transition: transform var(--transition-base);
+}
+
+// ========== Hover Effects ==========
+
+.hover-lift {
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+  }
+}
+
+.hover-shadow {
+  transition: box-shadow var(--transition-base);
+
+  &:hover {
+    box-shadow: var(--shadow-md);
+  }
+}
+
+.hover-scale {
+  transition: transform var(--transition-base);
+
+  &:hover {
+    transform: scale(1.05);
+  }
+}
+
+.hover-dim {
+  transition: opacity var(--transition-base);
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+// ========== Focus Effects ==========
+
+.focus-ring {
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+}
+
+.focus-ring-inset {
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: -2px;
+  }
+}

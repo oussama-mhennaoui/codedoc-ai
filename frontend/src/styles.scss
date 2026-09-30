@@ -1,6 +1,21 @@
-/* You can add global styles to this file, and also import other style files */
+// ============================================================================
+// CodeDoc AI Design System
+// Global Styles Entry Point
+// ============================================================================
+
+// Angular Material Theme (base)
 @import "@angular/material/prebuilt-themes/indigo-pink.css";
 @import "highlight.js/styles/github.css";
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+// Design System
+@import "styles/tokens";
+@import "styles/global";
+@import "styles/material";
+@import "styles/typography";
+@import "styles/layout";
+@import "styles/animations";
+
+html,
+body {
+  height: 100%;
+}

@@ -2,6 +2,10 @@ export interface GeneratedDoc {
   id: string;
   projectId: string;
   title: string;
+  sourceFileId?: string;
+  sourceFileName?: string;
+  sourceFileLanguage?: string;
+  sourceFileSizeBytes?: number;
   createdAt: string;
   updatedAt: string;
 }

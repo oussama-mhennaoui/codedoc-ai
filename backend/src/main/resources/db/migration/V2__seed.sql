@@ -1,5 +1,5 @@
 INSERT INTO users (username, email, password, role)
-VALUES ('demo', 'demo@example.com', '$2a$10$70JkTkQ/Y.r6osjISMhcQeHaYpihHsMhBpEJYPkILCx.gqT8CfG9O', 'USER')
+VALUES ('demo', 'demo@example.com', '$2a$10$Y9sPBdIKVoRzYwJY4KD6XeKGJqfJpqPtOGlvh1bVDHOI0h2g8V.Sa', 'USER')
 ON CONFLICT (username) DO NOTHING;
 
 INSERT INTO projects (owner_id, name, description, language)

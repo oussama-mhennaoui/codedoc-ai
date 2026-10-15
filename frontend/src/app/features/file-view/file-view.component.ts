@@ -11,7 +11,9 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { FileService } from '../../core/api/file.service';
 import { AiService } from '../../core/api/ai.service';
+import { DocService } from '../../core/api/doc.service';
 import { SourceFileDetail } from '../../core/models/source-file.model';
+import { GeneratedDoc } from '../../core/models/doc.model';
 import { CodeViewerComponent } from '../../shared/components/code-viewer/code-viewer.component';
 import { finalize } from 'rxjs';
 
@@ -41,6 +43,7 @@ export class FileViewComponent implements OnInit {
   private snackBar = inject(MatSnackBar);
   private router = inject(Router);
   private dialog = inject(MatDialog);
+  private docService = inject(DocService);
 
   id = input.required<string>(); // Project ID
   fileId = input.required<string>(); // File ID
@@ -48,12 +51,28 @@ export class FileViewComponent implements OnInit {
   file = signal<SourceFileDetail | null>(null);
   isLoading = signal(false);
   isAiLoading = signal(false);
+  docId = signal<string | null>(null);
   complexityResult = signal<{score: string, details: string} | null>(null);
 
   @ViewChild('complexityDialog') complexityDialog!: TemplateRef<any>;
 
   ngOnInit() {
     this.loadFile();
+    this.checkExistingDoc();
+  }
+
+  checkExistingDoc() {
+    const projectId = this.id();
+    const fileId = this.fileId();
+    
+    this.docService.listByProject(projectId).subscribe({
+      next: (docs: GeneratedDoc[]) => {
+        const existing = docs.find(d => String(d.sourceFileId) === fileId);
+        if (existing) {
+          this.docId.set(existing.id);
+        }
+      }
+    });
   }
 
   loadFile() {

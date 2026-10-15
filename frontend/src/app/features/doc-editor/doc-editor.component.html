@@ -13,9 +13,9 @@
       <div class="header-title">
         <h2>{{ doc()?.title || 'Loading Document...' }}</h2>
         @if (doc()?.sourceFileName) {
-          <div class="file-info">
+          <div class="file-info" [routerLink]="['/projects', doc()?.projectId, 'files', doc()?.sourceFileId]" style="cursor: pointer;">
             <mat-icon class="file-icon">description</mat-icon>
-            <span class="file-name">{{ doc()!.sourceFileName }}</span>
+            <span class="file-name">Source File: {{ doc()!.sourceFileName }}</span>
             @if (doc()?.sourceFileLanguage) {
               <span class="file-language">({{ doc()!.sourceFileLanguage }})</span>
             }

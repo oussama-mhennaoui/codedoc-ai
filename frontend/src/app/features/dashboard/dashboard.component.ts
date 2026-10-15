@@ -97,27 +97,6 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  archiveProject(project: Project) {
-    this.projectService.archive(project.id).subscribe({
-      next: () => {
-        this.loadProjects();
-        this.snackBar.open('Project archived', 'Close', { duration: 3000 });
-      },
-      error: () => this.snackBar.open('Error archiving project', 'Close', { duration: 3000 })
-    });
-  }
-
-  unarchiveProject(project: Project) {
-    // Assuming we can use update to unarchive
-    this.projectService.update(project.id, { archived: false }).subscribe({
-      next: () => {
-        this.loadProjects();
-        this.snackBar.open('Project unarchived', 'Close', { duration: 3000 });
-      },
-      error: () => this.snackBar.open('Error unarchiving project', 'Close', { duration: 3000 })
-    });
-  }
-
   deleteProject(project: Project) {
     if (confirm(`Are you sure you want to delete "${project.name}"?`)) {
       this.projectService.remove(project.id).subscribe({

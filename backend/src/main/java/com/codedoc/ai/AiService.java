@@ -59,6 +59,14 @@ public class AiService {
 
             AiResult result = processLlmCall(prompt, "generate_doc_schema");
             
+            // Delete existing document for this file if it exists (limit one doc per file)
+            docRepository.findBySourceFileId(file.getId()).ifPresent(existingDoc -> {
+                log.info("Deleting existing documentation for file id: {}", file.getId());
+                docRepository.delete(existingDoc);
+                // Flush to ensure deletion happens before the new save to avoid constraint violation
+                docRepository.flush();
+            });
+
             // Save document and sections
             GeneratedDoc doc = new GeneratedDoc();
             doc.setSourceFile(file);

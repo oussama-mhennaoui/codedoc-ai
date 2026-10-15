@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
 @RestController
@@ -107,6 +109,7 @@ public class DocController {
         return ResponseEntity.status(HttpStatus.CREATED).body(docService.addComment(id, request, user));
     }
     @GetMapping("/docs/{id}/export")
+    @Transactional(readOnly = true)
     public ResponseEntity<byte[]> exportDoc(
             @PathVariable Long id,
             @RequestParam(defaultValue = "md") String format,

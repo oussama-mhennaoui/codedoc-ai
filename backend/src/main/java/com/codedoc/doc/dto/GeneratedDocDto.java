@@ -7,6 +7,8 @@ import java.util.List;
 
 public record GeneratedDocDto(
     Long id,
+    Long projectId,
+    String title,
     Long sourceFileId,
     String sourceFileName,
     String sourceFileLanguage,

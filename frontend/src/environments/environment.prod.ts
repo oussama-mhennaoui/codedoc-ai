@@ -1,4 +1,5 @@
 export const environment = {
   production: true,
-  apiUrl: 'http://localhost:8081'
+  // Use dynamic hostname to support network access via Host IP
+  apiUrl: `http://${window.location.hostname}:8081`
 };

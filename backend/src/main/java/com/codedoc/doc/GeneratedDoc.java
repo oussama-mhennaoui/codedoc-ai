@@ -26,6 +26,8 @@ public class GeneratedDoc {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String title;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "source_file_id")
     private SourceFile sourceFile;

@@ -163,6 +163,7 @@ public class DocService {
         return DocMapper.toDto(commentRepository.save(comment));
     }
 
+    @Transactional(readOnly = true)
     public GeneratedDoc getDocEntity(Long docId, User user) {
         GeneratedDoc doc = docRepository.findById(docId)
                 .orElseThrow(() -> new NotFoundException("Document not found"));

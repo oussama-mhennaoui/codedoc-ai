@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { MatButtonModule } from '@angular/material/button';
@@ -19,6 +19,7 @@ import { finalize } from 'rxjs';
   standalone: true,
   imports: [
     CommonModule,
+    RouterModule,
     ReactiveFormsModule,
     DragDropModule,
     MatButtonModule,
@@ -261,6 +262,11 @@ export class DocEditorComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/projects']);
+    const projectId = this.doc()?.projectId;
+    if (projectId) {
+      this.router.navigate(['/projects', projectId]);
+    } else {
+      this.router.navigate(['/dashboard']);
+    }
   }
 }

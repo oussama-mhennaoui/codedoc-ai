@@ -11,6 +11,8 @@ public class DocMapper {
     public static GeneratedDocDto toDto(GeneratedDoc doc) {
         return new GeneratedDocDto(
             doc.getId(),
+            doc.getSourceFile().getProject().getId(),
+            doc.getTitle() != null ? doc.getTitle() : doc.getSourceFile().getFilename(),
             doc.getSourceFile().getId(),
             doc.getSourceFile().getFilename(),
             doc.getSourceFile().getLanguage(),

@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface GeneratedDocRepository extends JpaRepository<GeneratedDoc, Long> {
     java.util.List<GeneratedDoc> findBySourceFileProjectIdOrderByCreatedAtDesc(Long projectId);
+    java.util.Optional<GeneratedDoc> findBySourceFileId(Long sourceFileId);
 }

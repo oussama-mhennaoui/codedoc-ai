@@ -23,10 +23,17 @@
           <mat-icon>psychology</mat-icon>
           Detect Complexity
         </button>
-        <button mat-flat-button color="accent" (click)="generateDoc()" [disabled]="isAiLoading()" matTooltip="Generate AI documentation">
-          <mat-icon>auto_awesome</mat-icon>
-          Generate Docs
-        </button>
+        @if (docId()) {
+          <button mat-flat-button color="primary" [routerLink]="['/docs', docId()]" matTooltip="View existing documentation">
+            <mat-icon>menu_book</mat-icon>
+            View Docs
+          </button>
+        } @else {
+          <button mat-flat-button color="accent" (click)="generateDoc()" [disabled]="isAiLoading()" matTooltip="Generate AI documentation">
+            <mat-icon>auto_awesome</mat-icon>
+            Generate Docs
+          </button>
+        }
       </div>
     </div>
 

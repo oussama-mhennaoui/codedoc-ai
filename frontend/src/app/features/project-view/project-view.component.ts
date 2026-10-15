@@ -163,6 +163,19 @@ export class ProjectViewComponent implements OnInit {
     this.router.navigate(['/docs', docId]);
   }
 
+  deleteDoc(event: Event, docId: string) {
+    event.stopPropagation();
+    if (confirm('Are you sure you want to delete this documentation?')) {
+      this.docService.deleteDoc(docId).subscribe({
+        next: () => {
+          this.loadDocs();
+          this.snackBar.open('Documentation deleted', 'Close', { duration: 3000 });
+        },
+        error: () => this.snackBar.open('Error deleting documentation', 'Close', { duration: 3000 })
+      });
+    }
+  }
+
   viewFile(fileId: number) {
     this.router.navigate(['/projects', this.id(), 'files', fileId]);
   }

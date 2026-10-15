@@ -1,5 +1,6 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
 import { AuthResponse, LoginRequest, RegisterRequest, User } from '../models/user.model';
 import { tap } from 'rxjs';
@@ -9,6 +10,7 @@ import { tap } from 'rxjs';
 })
 export class AuthService {
   private http = inject(HttpClient);
+  private router = inject(Router);
   private readonly TOKEN_KEY = 'token';
 
   private _user = signal<User | null>(null);
@@ -32,17 +34,29 @@ export class AuthService {
   logout() {
     localStorage.removeItem(this.TOKEN_KEY);
     this._user.set(null);
+    this.router.navigate(['/login']);
   }
 
   loadMe() {
     const token = localStorage.getItem(this.TOKEN_KEY);
-    if (!token) return;
+    if (!token) {
+      this._user.set(null);
+      return Promise.resolve();
+    }
 
-    this.http.get<User>(`${environment.apiUrl}/api/auth/me`)
-      .subscribe({
-        next: (user) => this._user.set(user),
-        error: () => this.logout()
-      });
+    return new Promise<void>((resolve) => {
+      this.http.get<User>(`${environment.apiUrl}/api/auth/me`)
+        .subscribe({
+          next: (user) => {
+            this._user.set(user);
+            resolve();
+          },
+          error: () => {
+            this.logout();
+            resolve();
+          }
+        });
+    });
   }
 
   private handleAuth(res: AuthResponse) {

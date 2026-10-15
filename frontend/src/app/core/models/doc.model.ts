@@ -2,10 +2,12 @@ export interface GeneratedDoc {
   id: string;
   projectId: string;
   title: string;
-  sourceFileId?: string;
-  sourceFileName?: string;
+  sourceFileId: string;
+  sourceFileName: string;
   sourceFileLanguage?: string;
   sourceFileSizeBytes?: number;
+  status: 'PENDING' | 'SUCCESS' | 'FAILED';
+  errorMessage?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -16,36 +18,37 @@ export interface DocSection {
   title: string;
   content: string;
   orderIndex: number;
+  type?: string;
+  createdAt: string;
 }
 
 export interface Comment {
   id: string;
   sectionId: string;
   authorId: string;
-  authorName?: string;
+  authorName: string;
   content: string;
   createdAt: string;
 }
 
-export interface CreateDocRequest {
-  projectId: string;
-  title: string;
-}
-
 export interface UpdateDocRequest {
-  title: string;
+  title?: string;
+  status?: 'PENDING' | 'SUCCESS' | 'FAILED';
+  errorMessage?: string;
 }
 
 export interface AddSectionRequest {
   title: string;
   content: string;
   orderIndex: number;
+  type?: string;
 }
 
 export interface UpdateSectionRequest {
   title?: string;
   content?: string;
   orderIndex?: number;
+  type?: string;
 }
 
 export interface AddCommentRequest {

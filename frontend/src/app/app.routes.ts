@@ -38,6 +38,11 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
   {
+    path: 'unit-test-generator',
+    loadComponent: () => import('./features/test-generator/test-generator.component').then(m => m.TestGeneratorComponent),
+    canActivate: [authGuard]
+  },
+  {
     path: '**',
     redirectTo: ''
   }

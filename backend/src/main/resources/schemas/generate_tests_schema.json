@@ -1,0 +1,77 @@
+{
+  "title": "Generate Unit Tests Response",
+  "description": "Schema for the unit test generation output",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "language",
+    "testFramework",
+    "testFiles",
+    "summary"
+  ],
+  "properties": {
+    "language": {
+      "type": "string",
+      "description": "Programming language of the generated tests"
+    },
+    "testFramework": {
+      "type": "string",
+      "description": "Test framework used (e.g., JUnit 5, Jest, pytest)"
+    },
+    "testFiles": {
+      "type": "array",
+      "description": "List of generated test files",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["filename", "content", "tests"],
+        "properties": {
+          "filename": {
+            "type": "string",
+            "description": "Suggested file name for the test file"
+          },
+          "content": {
+            "type": "string",
+            "description": "Complete source code of the test file including imports"
+          },
+          "tests": {
+            "type": "array",
+            "description": "Individual test descriptions",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["name", "description", "category"],
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the test method/function"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "What this test verifies"
+                },
+                "category": {
+                  "type": "string",
+                  "enum": ["happy_path", "edge_case", "error_handling", "null_safety", "integration"],
+                  "description": "Category of the test"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "summary": {
+      "type": "string",
+      "description": "Brief explanation of the test strategy and coverage"
+    },
+    "assumptions": {
+      "type": "array",
+      "description": "Assumptions and limitations of the generated tests",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

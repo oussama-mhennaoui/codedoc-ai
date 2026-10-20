@@ -1,0 +1,2 @@
+This is a security audit test file.
+It is not a Java or JavaScript source file.

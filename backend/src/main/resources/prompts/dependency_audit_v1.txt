@@ -1,0 +1,40 @@
+Tu es un expert en sécurité des chaînes d'approvisionnement (Supply Chain Security).
+Projet : {{projectName}}
+Fichier : {{fileName}} (Fichier de dépendances)
+
+Analyse les dépendances listées dans ce fichier afin d'identifier les bibliothèques vulnérables, les versions obsolètes et les CVE connues.
+
+Pour chaque dépendance vulnérable détectée, fournis :
+- le nom de la dépendance et sa version ;
+- le niveau de sévérité : CRITICAL, HIGH, MEDIUM ou LOW ;
+- une description de la vulnérabilité ou de la CVE associée ;
+- les conséquences potentielles ;
+- une proposition de correction (version recommandée) ;
+- l'identifiant CVE correspondant, si applicable.
+
+Code source :
+```
+{{sourceCode}}
+```
+
+Retourne uniquement un JSON valide, conforme à la structure suivante :
+{
+  "score_securite": "C",
+  "summary": "Résumé des vulnérabilités de dépendances trouvées.",
+  "vulnerabilites": [
+    {
+      "type": "Vulnerable Dependency",
+      "severite": "HIGH",
+      "fichier": "{{fileName}}",
+      "ligne": 10,
+      "description": "La version 1.2.3 de 'library-name' est vulnérable à la CVE-202X-XXXX.",
+      "consequences": "Exécution de code à distance possible.",
+      "correctif": "Mettre à jour vers la version 1.2.4 ou supérieure.",
+      "cwe_id": "CWE-1101",
+      "code_corrige": "<version>1.2.4</version>"
+    }
+  ]
+}
+
+N'invente jamais de vulnérabilités. Si une information est incertaine, indique-le. Si aucune vulnérabilité n'est identifiée, retourne une liste vide.
+Le score doit refléter la gravité des vulnérabilités de dépendances trouvées.

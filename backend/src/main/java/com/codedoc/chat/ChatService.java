@@ -14,6 +14,9 @@ import com.codedoc.sourcefile.SourceFileRepository;
 import com.codedoc.user.User;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.codedoc.ai.AILog;
+import com.codedoc.ai.AILogRepository;
+import com.codedoc.ai.Anonymizer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -38,6 +41,8 @@ public class ChatService {
     private final ProjectRepository projectRepository;
     private final SourceFileRepository sourceFileRepository;
     private final ObjectMapper objectMapper;
+    private final AILogRepository aiLogRepository;
+    private final Anonymizer anonymizer;
 
     // ─── Questions suggérées prédéfinies par défaut ──────────────────────────
     public static final List<String> SUGGESTED_QUESTIONS = List.of(
@@ -102,8 +107,20 @@ public class ChatService {
         // 7. Appel LLM avec validation de schéma
         String rawSchema = schemaValidator.getRawSchema("chatbot_schema");
         String finalPrompt = prompt + "\n\nEXPECTED JSON SCHEMA:\n```json\n" + rawSchema + "\n```\n";
-        LlmResponse llmResponse = llmClient.call(finalPrompt);
-        schemaValidator.validate(llmResponse.data(), "chatbot_schema");
+        
+        long startTime = System.currentTimeMillis();
+        LlmResponse llmResponse;
+        try {
+            llmResponse = llmClient.call(finalPrompt);
+            schemaValidator.validate(llmResponse.data(), "chatbot_schema");
+            int totalTok = llmResponse.totalTokens();
+            int pt = (int) (totalTok * 0.7);
+            int ct = totalTok - pt;
+            aiLogRepository.save(new AILog(user, "chat_rag", "SUCCESS", pt, ct, (int) (System.currentTimeMillis() - startTime)));
+        } catch (Exception ex) {
+            aiLogRepository.save(new AILog(user, "chat_rag", "FAILURE", 0, 0, (int) (System.currentTimeMillis() - startTime)));
+            throw ex;
+        }
 
         JsonNode data = llmResponse.data();
         String answer = data.path("answer").asText("");

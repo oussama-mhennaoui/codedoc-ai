@@ -248,6 +248,74 @@
                   <strong>Suggestion de Refactoring :</strong>
                 </div>
                 <p class="suggestion-text">{{ smell.suggestionRefactoring }}</p>
+
+                <!-- Intelligent Code Refactoring Diff & Patch -->
+                @if (smell.codeRefactorise || smell.codeOriginal) {
+                  <div class="patch-container">
+                    <div class="patch-header">
+                      <div class="patch-tabs">
+                        @if (smell.codeRefactorise) {
+                          <button
+                            type="button"
+                            class="patch-tab-btn"
+                            [class.active]="getTab($index) === 'refactored'"
+                            (click)="setTab($index, 'refactored')">
+                            <mat-icon>verified</mat-icon>
+                            Code Refactorisé (IA)
+                          </button>
+                        }
+                        @if (smell.codeOriginal) {
+                          <button
+                            type="button"
+                            class="patch-tab-btn"
+                            [class.active]="getTab($index) === 'original'"
+                            (click)="setTab($index, 'original')">
+                            <mat-icon>history</mat-icon>
+                            Code d'Origine
+                          </button>
+                        }
+                      </div>
+
+                      @if (smell.codeRefactorise) {
+                        <button
+                          mat-button
+                          class="copy-patch-btn"
+                          [class.copied]="copiedIndex() === $index"
+                          (click)="copyCode(smell.codeRefactorise, $index, $event)"
+                          matTooltip="Copier le code refactorisé dans le presse-papier">
+                          <mat-icon>{{ copiedIndex() === $index ? 'check' : 'content_copy' }}</mat-icon>
+                          <span>{{ copiedIndex() === $index ? 'Copié !' : 'Copier le patch' }}</span>
+                        </button>
+                      }
+                    </div>
+
+                    <div class="patch-content">
+                      @if (getTab($index) === 'refactored' && smell.codeRefactorise) {
+                        <div class="code-box refactored-box">
+                          <div class="code-box-badge success">
+                            <mat-icon>check_circle</mat-icon>
+                            <span>Refactoring proposé · Propre & Conforme SOLID</span>
+                          </div>
+                          <app-code-viewer
+                            [code]="smell.codeRefactorise"
+                            [language]="language()">
+                          </app-code-viewer>
+                        </div>
+                      } @else if (getTab($index) === 'original' && smell.codeOriginal) {
+                        <div class="code-box original-box">
+                          <div class="code-box-badge warning">
+                            <mat-icon>warning</mat-icon>
+                            <span>Extrait d'origine avec code smell (Ligne {{ smell.ligne }})</span>
+                          </div>
+                          <app-code-viewer
+                            [code]="smell.codeOriginal"
+                            [language]="language()">
+                          </app-code-viewer>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                }
               </div>
             </div>
           }

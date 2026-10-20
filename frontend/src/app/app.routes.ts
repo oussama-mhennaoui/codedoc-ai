@@ -48,6 +48,11 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
   {
+    path: 'ai-observability',
+    loadComponent: () => import('./features/ai-metrics/ai-metrics.component').then(m => m.AiMetricsComponent),
+    canActivate: [authGuard]
+  },
+  {
     path: '**',
     redirectTo: ''
   }

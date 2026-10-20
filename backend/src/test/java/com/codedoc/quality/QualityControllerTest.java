@@ -139,7 +139,9 @@ class QualityControllerTest {
               "ligne": 12,
               "gravite": "faible",
               "description": "Valeur en dur non extraite en constante",
-              "suggestion_refactoring": "Extraire dans private static final int TIMEOUT_SECONDS"
+              "suggestion_refactoring": "Extraire dans private static final int TIMEOUT_SECONDS",
+              "code_original": "int timeout = 5000;",
+              "code_refactorise": "private static final int TIMEOUT_SECONDS = 5;\\nint timeout = TIMEOUT_SECONDS * 1000;"
             },
             {
               "type": "Long Method",
@@ -147,7 +149,9 @@ class QualityControllerTest {
               "ligne": 35,
               "gravite": "critique",
               "description": "Méthode de 65 lignes avec logique métier et mapping",
-              "suggestion_refactoring": "Déléguer le mapping à un UserMapper"
+              "suggestion_refactoring": "Déléguer le mapping à un UserMapper",
+              "code_original": "public UserDto toDto(User u) { /* 65 lines of code */ }",
+              "code_refactorise": "public UserDto toDto(User u) {\\n    return userMapper.map(u);\\n}"
             }
           ]
         }
@@ -170,6 +174,7 @@ class QualityControllerTest {
                 .andExpect(jsonPath("$.technicalDebtMinutes").value(45))
                 .andExpect(jsonPath("$.codeSmells.length()").value(2))
                 .andExpect(jsonPath("$.codeSmells[0].gravite").value("critique"))
+                .andExpect(jsonPath("$.codeSmells[0].codeRefactorise").isNotEmpty())
                 .andExpect(jsonPath("$.codeSmells[1].gravite").value("faible"));
     }
 

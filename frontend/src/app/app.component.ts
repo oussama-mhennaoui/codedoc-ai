@@ -50,8 +50,14 @@ export class AppComponent {
     return this.isOnLandingPage() || this.isAuthPage();
   });
 
+  isObservabilityPage = computed(() => {
+    const url = this.currentUrl();
+    return url.includes('/ai-observability');
+  });
+
   pageTitle = computed(() => {
     const url = this.currentUrl();
+    if (url.includes('/ai-observability')) return 'AI Observability Studio';
     if (url.includes('/dashboard')) return 'Dashboard';
     if (url.includes('/unit-test-generator')) return 'AI Test Generator';
     if (url.includes('/audit')) return 'Security Audit';

@@ -5,6 +5,8 @@ export interface CodeSmell {
   gravite: 'critique' | 'moyen' | 'faible';
   description: string;
   suggestionRefactoring: string;
+  codeOriginal?: string;
+  codeRefactorise?: string;
 }
 
 export interface RespectSolid {

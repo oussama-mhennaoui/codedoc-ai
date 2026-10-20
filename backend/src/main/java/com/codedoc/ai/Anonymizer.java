@@ -29,20 +29,48 @@ public class Anonymizer {
         private static final Pattern JWT_PATTERN = Pattern.compile(
                         "eyJ[A-Za-z0-9_\\-]+\\.eyJ[A-Za-z0-9_\\-]+\\.[A-Za-z0-9_\\-]+");
 
+        private final java.util.concurrent.atomic.AtomicLong redactionsCounter = new java.util.concurrent.atomic.AtomicLong(0);
+
+        public long getRedactionsCount() {
+                return redactionsCounter.get();
+        }
+
         public String clean(String input) {
                 if (input == null || input.isEmpty()) {
                         return input;
                 }
 
                 String result = input;
-                result = EMAIL_PATTERN.matcher(result).replaceAll("[EMAIL]");
-                result = SK_KEY_PATTERN.matcher(result).replaceAll("[REDACTED]");
-                result = JWT_PATTERN.matcher(result).replaceAll("[REDACTED]");
-                result = BEARER_TOKEN_PATTERN.matcher(result).replaceAll("[REDACTED]");
-                result = API_KEY_GENERAL_PATTERN.matcher(result).replaceAll(
+                int count = 0;
+                var emailMatcher = EMAIL_PATTERN.matcher(result);
+                while (emailMatcher.find()) count++;
+                result = emailMatcher.replaceAll("[EMAIL]");
+
+                var skMatcher = SK_KEY_PATTERN.matcher(result);
+                while (skMatcher.find()) count++;
+                result = skMatcher.replaceAll("[REDACTED]");
+
+                var jwtMatcher = JWT_PATTERN.matcher(result);
+                while (jwtMatcher.find()) count++;
+                result = jwtMatcher.replaceAll("[REDACTED]");
+
+                var bearerMatcher = BEARER_TOKEN_PATTERN.matcher(result);
+                while (bearerMatcher.find()) count++;
+                result = bearerMatcher.replaceAll("[REDACTED]");
+
+                var apiKeyMatcher = API_KEY_GENERAL_PATTERN.matcher(result);
+                while (apiKeyMatcher.find()) count++;
+                result = apiKeyMatcher.replaceAll(
                                 matcher -> matcher.group().replaceFirst(
                                                 Pattern.quote(matcher.group(1)), "[REDACTED]"));
-                result = PHONE_PATTERN.matcher(result).replaceAll("[PHONE]");
+
+                var phoneMatcher = PHONE_PATTERN.matcher(result);
+                while (phoneMatcher.find()) count++;
+                result = phoneMatcher.replaceAll("[PHONE]");
+
+                if (count > 0) {
+                        redactionsCounter.addAndGet(count);
+                }
 
                 return result;
         }

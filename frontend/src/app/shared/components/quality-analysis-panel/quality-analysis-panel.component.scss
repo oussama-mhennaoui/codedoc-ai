@@ -591,6 +591,152 @@
           line-height: 1.4;
           font-weight: var(--font-weight-medium);
         }
+
+        .patch-container {
+          margin-top: var(--space-3);
+          border-top: 1px dashed var(--color-border);
+          padding-top: var(--space-3);
+          display: flex;
+          flex-direction: column;
+          gap: var(--space-2);
+
+          .patch-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: var(--space-2);
+
+            .patch-tabs {
+              display: flex;
+              gap: 4px;
+              background: var(--color-bg);
+              padding: 3px;
+              border-radius: var(--radius-md);
+              border: 1px solid var(--color-border);
+
+              .patch-tab-btn {
+                background: transparent;
+                border: none;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                gap: 5px;
+                padding: 4px 10px;
+                border-radius: var(--radius-sm);
+                font-size: 11px;
+                font-weight: var(--font-weight-medium);
+                color: var(--color-text-muted);
+                transition: all var(--transition-fast);
+
+                mat-icon {
+                  font-size: 14px;
+                  width: 14px;
+                  height: 14px;
+                }
+
+                &:hover {
+                  color: var(--color-text);
+                  background: var(--color-bg-subtle);
+                }
+
+                &.active {
+                  background: var(--color-primary);
+                  color: white;
+                  font-weight: var(--font-weight-bold);
+                  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+                }
+              }
+            }
+
+            .copy-patch-btn {
+              font-size: 11px;
+              height: 28px;
+              line-height: 28px;
+              padding: 0 10px;
+              border-radius: var(--radius-sm);
+              border: 1px solid var(--color-border);
+              background: var(--color-bg);
+              color: var(--color-text-muted);
+              transition: all var(--transition-fast);
+
+              mat-icon {
+                font-size: 14px;
+                width: 14px;
+                height: 14px;
+                margin-right: 4px;
+              }
+
+              &:hover {
+                color: var(--color-primary);
+                border-color: var(--color-primary);
+                background: rgba(99, 102, 241, 0.05);
+              }
+
+              &.copied {
+                color: var(--color-success);
+                border-color: var(--color-success);
+                background: rgba(16, 185, 129, 0.1);
+              }
+            }
+          }
+
+          .patch-content {
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            border: 1px solid var(--color-border);
+            background: var(--color-bg);
+
+            .code-box {
+              position: relative;
+
+              .code-box-badge {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                font-size: 11px;
+                font-weight: var(--font-weight-bold);
+                padding: 6px 12px;
+                border-bottom: 1px solid var(--color-border);
+
+                mat-icon {
+                  font-size: 14px;
+                  width: 14px;
+                  height: 14px;
+                }
+
+                &.success {
+                  background: rgba(16, 185, 129, 0.08);
+                  color: var(--color-success);
+                }
+
+                &.warning {
+                  background: rgba(245, 158, 11, 0.08);
+                  color: var(--color-warning);
+                }
+              }
+
+              &.refactored-box {
+                border-left: 3px solid var(--color-success);
+              }
+
+              &.original-box {
+                border-left: 3px solid var(--color-warning);
+              }
+
+              app-code-viewer {
+                display: block;
+
+                ::ng-deep pre {
+                  margin: 0 !important;
+                  border-radius: 0 !important;
+                  max-height: 280px;
+                  font-size: 12px;
+                }
+              }
+            }
+          }
+        }
       }
     }
   }

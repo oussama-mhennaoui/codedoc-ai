@@ -372,6 +372,7 @@
       &.text-blue { color: #38bdf8; }
       &.text-amber { color: #fbbf24; }
       &.text-warning { color: #f59e0b; }
+      &.text-purple { color: #c084fc; }
     }
 
     .nav-label {
@@ -399,6 +400,24 @@
       background: rgba(245, 158, 11, 0.15);
       color: #fbbf24;
       text-transform: uppercase;
+    }
+
+    .new-badge {
+      font-size: 9px;
+      font-weight: 800;
+      padding: 1px 6px;
+      border-radius: var(--radius-full);
+      background: rgba(168, 85, 247, 0.2);
+      color: #c084fc;
+      border: 1px solid rgba(168, 85, 247, 0.35);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      animation: pulse-badge 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-badge {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
     }
 
     .project-dot {

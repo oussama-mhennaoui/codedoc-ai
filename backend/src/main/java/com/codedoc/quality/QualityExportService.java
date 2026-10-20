@@ -74,6 +74,22 @@ public class QualityExportService {
                       .append(smell.path("description").asText("").replace("|", "\\|")).append(" | ")
                       .append(smell.path("suggestion_refactoring").asText("").replace("|", "\\|")).append(" |\n");
                 }
+
+                boolean hasPatches = sortedSmells.stream().anyMatch(s -> s.hasNonNull("code_refactorise") && !s.path("code_refactorise").asText().isBlank());
+                if (hasPatches) {
+                    sb.append("\n### Patchs de Refactoring Recommandés\n\n");
+                    for (JsonNode smell : sortedSmells) {
+                        String refactored = smell.path("code_refactorise").asText("");
+                        if (!refactored.isBlank()) {
+                            sb.append("#### ").append(smell.path("type").asText("")).append(" (Ligne ").append(smell.path("ligne").asInt(0)).append(")\n\n");
+                            String original = smell.path("code_original").asText("");
+                            if (!original.isBlank()) {
+                                sb.append("**Avant (Code problématique) :**\n```\n").append(original).append("\n```\n\n");
+                            }
+                            sb.append("**Après (Refactoring proposé) :**\n```\n").append(refactored).append("\n```\n\n");
+                        }
+                    }
+                }
             } else {
                 sb.append("Aucun code smell détecté. Le code respecte les bonnes pratiques.\n");
             }

@@ -12,8 +12,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.codedoc.ai.dto.AiMetricsDto;
+import com.codedoc.ai.dto.AiLogDto;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/ai")
@@ -21,6 +25,17 @@ import org.springframework.web.bind.annotation.RestController;
 public class AiController {
 
     private final AiService aiService;
+    private final AiMetricsService aiMetricsService;
+
+    @GetMapping("/metrics")
+    public ResponseEntity<AiMetricsDto> getMetrics() {
+        return ResponseEntity.ok(aiMetricsService.getMetrics());
+    }
+
+    @GetMapping("/logs")
+    public ResponseEntity<List<AiLogDto>> getRecentLogs() {
+        return ResponseEntity.ok(aiMetricsService.getRecentLogs());
+    }
 
     @PostMapping("/generate-doc")
     public ResponseEntity<AiResult> generateDoc(

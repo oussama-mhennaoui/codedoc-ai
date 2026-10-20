@@ -207,7 +207,9 @@ public class QualityService {
                             s.path("ligne").asInt(1),
                             s.path("gravite").asText("faible"),
                             s.path("description").asText(""),
-                            s.path("suggestion_refactoring").asText("")
+                            s.path("suggestion_refactoring").asText(""),
+                            s.hasNonNull("code_original") ? s.path("code_original").asText("") : null,
+                            s.hasNonNull("code_refactorise") ? s.path("code_refactorise").asText("") : null
                     ));
                 }
             }

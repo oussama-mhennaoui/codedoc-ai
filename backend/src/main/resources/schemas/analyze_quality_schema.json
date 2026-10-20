@@ -59,6 +59,14 @@
           "suggestion_refactoring": {
             "type": "string",
             "description": "Actionable refactoring recommendation"
+          },
+          "code_original": {
+            "type": "string",
+            "description": "Original problematic code excerpt before refactoring"
+          },
+          "code_refactorise": {
+            "type": "string",
+            "description": "Clean, refactored replacement code snippet applying the suggestion"
           }
         }
       }

@@ -4,6 +4,7 @@
   [class.sidebar-collapsed]="layoutService.isSidebarCollapsed()"
   [class.landing-mode]="isOnLandingPage()"
   [class.auth-mode]="isAuthPage()"
+  [class.dark-studio-mode]="isObservabilityPage()"
 >
   @if (authService.user() && !isFullBleedPage()) {
     <app-sidebar></app-sidebar>

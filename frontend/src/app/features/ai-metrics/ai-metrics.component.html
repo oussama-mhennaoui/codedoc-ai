@@ -1,0 +1,279 @@
+<div class="metrics-container">
+  <!-- Header -->
+  <header class="metrics-header">
+    <div class="header-left">
+      <div class="badge-tag">
+        <mat-icon>query_stats</mat-icon>
+        <span>Telemetry & Reliability</span>
+      </div>
+      <h1>AI Observability & Performance Studio</h1>
+      <p class="subtitle">
+        Real-time telemetry measuring model latency, reliability, token economy, and ethical PII protections.
+      </p>
+    </div>
+    <div class="header-actions">
+      <button mat-flat-button color="primary" class="refresh-btn" (click)="fetchMetrics()" [disabled]="isLoading()">
+        @if (isLoading()) {
+          <mat-spinner diameter="18" class="btn-spinner"></mat-spinner>
+          <span>Refreshing...</span>
+        } @else {
+          <mat-icon>refresh</mat-icon>
+          <span>Refresh Telemetry</span>
+        }
+      </button>
+    </div>
+  </header>
+
+  @if (isLoading() && !metrics()) {
+    <div class="loading-state">
+      <mat-spinner diameter="48"></mat-spinner>
+      <p>Collecting AI execution telemetry from server...</p>
+    </div>
+  }
+
+  @if (error()) {
+    <div class="error-banner">
+      <mat-icon>error_outline</mat-icon>
+      <span>{{ error() }}</span>
+      <button mat-stroked-button (click)="fetchMetrics()">Retry</button>
+    </div>
+  }
+
+  @if (metrics(); as m) {
+    <!-- Vital Stats Grid -->
+    <div class="stats-grid">
+      <!-- Card 1: Reliability & Success Rate -->
+      <mat-card class="stat-card reliability-card">
+        <div class="card-icon-wrap">
+          <mat-icon>verified</mat-icon>
+        </div>
+        <div class="card-meta">
+          <span class="label">Reliability & Success</span>
+          <div class="value-row">
+            <span class="metric-value">{{ m.successRatePercent }}%</span>
+            <span class="trend-badge positive">
+              <mat-icon>check_circle</mat-icon>
+              {{ m.successfulCalls }}/{{ m.totalCalls }} ok
+            </span>
+          </div>
+          <mat-progress-bar mode="determinate" [value]="m.successRatePercent" class="metric-bar"></mat-progress-bar>
+        </div>
+      </mat-card>
+
+      <!-- Card 2: Average Latency -->
+      <mat-card class="stat-card latency-card">
+        <div class="card-icon-wrap">
+          <mat-icon>speed</mat-icon>
+        </div>
+        <div class="card-meta">
+          <span class="label">Average Latency</span>
+          <div class="value-row">
+            <span class="metric-value">{{ m.avgLatencyMs }} <span class="unit">ms</span></span>
+            <span class="trend-badge" [class.fast]="m.avgLatencyMs < 2000" [class.moderate]="m.avgLatencyMs >= 2000">
+              <mat-icon>bolt</mat-icon>
+              {{ m.avgLatencyMs < 2000 ? 'Ultra Fast' : 'Normal' }}
+            </span>
+          </div>
+          <span class="sub-caption">End-to-end roundtrip execution</span>
+        </div>
+      </mat-card>
+
+      <!-- Card 3: Token Usage -->
+      <mat-card class="stat-card tokens-card">
+        <div class="card-icon-wrap">
+          <mat-icon>toll</mat-icon>
+        </div>
+        <div class="card-meta">
+          <span class="label">Total Tokens Consumed</span>
+          <div class="value-row">
+            <span class="metric-value">{{ formatTokens(m.totalTokens) }}</span>
+            <span class="trend-badge neutral">
+              <mat-icon>memory</mat-icon>
+              {{ m.totalCalls }} calls
+            </span>
+          </div>
+          <span class="sub-caption">
+            In: {{ formatTokens(m.totalPromptTokens) }} | Out: {{ formatTokens(m.totalCompletionTokens) }}
+          </span>
+        </div>
+      </mat-card>
+
+      <!-- Card 4: Estimated Cost -->
+      <mat-card class="stat-card cost-card">
+        <div class="card-icon-wrap">
+          <mat-icon>payments</mat-icon>
+        </div>
+        <div class="card-meta">
+          <span class="label">Estimated API Cost</span>
+          <div class="value-row">
+            <span class="metric-value">${{ m.estimatedCostUsd | number:'1.4-4' }}</span>
+            <span class="trend-badge neutral">USD</span>
+          </div>
+          <span class="sub-caption">Based on {{ m.activeModel }} tier</span>
+        </div>
+      </mat-card>
+
+      <!-- Card 5: Ethical Safeguards -->
+      <mat-card class="stat-card ethics-card">
+        <div class="card-icon-wrap">
+          <mat-icon>shield</mat-icon>
+        </div>
+        <div class="card-meta">
+          <span class="label">Ethical PII Redactions</span>
+          <div class="value-row">
+            <span class="metric-value">{{ m.piiRedactionsCount }}</span>
+            <span class="trend-badge shield-badge">
+              <mat-icon>lock</mat-icon>
+              Protected
+            </span>
+          </div>
+          <span class="sub-caption">Emails, keys & tokens scrubbed</span>
+        </div>
+      </mat-card>
+    </div>
+
+    <!-- Active Model & Guardrails Banner -->
+    <div class="model-banner">
+      <div class="model-info">
+        <div class="pill">
+          <mat-icon>psychology</mat-icon>
+          <span>Active Architecture: <strong>{{ m.activeModel }}</strong></span>
+        </div>
+        <div class="pill green">
+          <mat-icon>task_alt</mat-icon>
+          <span>JSON Schema Validator: <strong>Strict (NetworkNT)</strong></span>
+        </div>
+        <div class="pill cyan">
+          <mat-icon>security</mat-icon>
+          <span>Anonymizer Engine: <strong>Automated Regex Scrubbing</strong></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Operations Breakdown Table -->
+    <section class="section-panel">
+      <div class="panel-header">
+        <div class="title-with-icon">
+          <mat-icon>hub</mat-icon>
+          <h2>Operations Performance Breakdown</h2>
+        </div>
+        <span class="panel-tag">{{ m.endpointMetrics.length }} Distinct AI Pipelines</span>
+      </div>
+
+      <div class="table-responsive">
+        <table class="custom-table">
+          <thead>
+            <tr>
+              <th>Operation / Pipeline</th>
+              <th>Total Invocations</th>
+              <th>Avg Latency</th>
+              <th>Success Rate</th>
+              <th>Total Tokens</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (ep of m.endpointMetrics; track ep.endpoint) {
+              <tr>
+                <td>
+                  <div class="op-cell">
+                    <mat-icon class="op-icon">{{ getEndpointIcon(ep.endpoint) }}</mat-icon>
+                    <div>
+                      <span class="op-name">{{ getEndpointLabel(ep.endpoint) }}</span>
+                      <span class="op-code">{{ ep.endpoint }}</span>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <span class="numeric-val">{{ ep.totalCalls }}</span>
+                </td>
+                <td>
+                  <span class="numeric-val">{{ ep.avgLatencyMs }} ms</span>
+                </td>
+                <td>
+                  <div class="rate-cell">
+                    <span class="rate-text" [class.high]="ep.successRatePercent >= 90" [class.mid]="ep.successRatePercent < 90">
+                      {{ ep.successRatePercent }}%
+                    </span>
+                    <mat-progress-bar mode="determinate" [value]="ep.successRatePercent" class="inline-bar"></mat-progress-bar>
+                  </div>
+                </td>
+                <td>
+                  <span class="numeric-val">{{ formatTokens(ep.totalTokens) }}</span>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="5" class="empty-cell">No AI operations recorded yet. Execute a task to see metrics!</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Recent Execution Stream -->
+    <section class="section-panel">
+      <div class="panel-header">
+        <div class="title-with-icon">
+          <mat-icon>stream</mat-icon>
+          <h2>Live AI Execution Stream (Audit Log)</h2>
+        </div>
+        <span class="panel-tag">{{ m.recentLogs.length }} Most Recent Calls</span>
+      </div>
+
+      <div class="table-responsive">
+        <table class="custom-table">
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>Operation</th>
+              <th>User</th>
+              <th>Status</th>
+              <th>Tokens</th>
+              <th>Latency</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (log of m.recentLogs; track log.id) {
+              <tr>
+                <td class="date-cell">
+                  {{ log.createdAt | date:'HH:mm:ss · dd MMM' }}
+                </td>
+                <td>
+                  <span class="endpoint-badge">
+                    <mat-icon class="mini-icon">{{ getEndpointIcon(log.endpoint) }}</mat-icon>
+                    {{ getEndpointLabel(log.endpoint) }}
+                  </span>
+                </td>
+                <td class="user-cell">
+                  <mat-icon class="mini-icon">person</mat-icon>
+                  {{ log.username }}
+                </td>
+                <td>
+                  <span class="status-pill" [class.success]="log.status.toLowerCase().includes('success')" [class.failure]="!log.status.toLowerCase().includes('success')">
+                    <mat-icon class="mini-icon">{{ log.status.toLowerCase().includes('success') ? 'check' : 'warning' }}</mat-icon>
+                    {{ log.status }}
+                  </span>
+                </td>
+                <td>
+                  <span class="tokens-pill">
+                    {{ log.totalTokens }} tok
+                  </span>
+                </td>
+                <td>
+                  <span class="latency-val" [class.fast]="log.latencyMs < 2000">
+                    {{ log.latencyMs }} ms
+                  </span>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="6" class="empty-cell">No executions recorded in audit log.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+  }
+</div>

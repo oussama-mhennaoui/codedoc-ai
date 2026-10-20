@@ -9,6 +9,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CodeSmell, QualityReport } from '../../../core/models/quality.model';
+import { CodeViewerComponent } from '../code-viewer/code-viewer.component';
 
 @Component({
   selector: 'app-quality-analysis-panel',
@@ -22,7 +23,8 @@ import { CodeSmell, QualityReport } from '../../../core/models/quality.model';
     MatChipsModule,
     MatMenuModule,
     MatTooltipModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    CodeViewerComponent
   ],
   templateUrl: './quality-analysis-panel.component.html',
   styleUrl: './quality-analysis-panel.component.scss',
@@ -32,6 +34,7 @@ export class QualityAnalysisPanelComponent {
   report = input<QualityReport | null>(null);
   isLoading = input<boolean>(false);
   filename = input<string>('');
+  language = input<string>('java');
 
   analyze = output<void>();
   exportPdf = output<void>();
@@ -39,6 +42,8 @@ export class QualityAnalysisPanelComponent {
   selectLine = output<number>();
 
   filterSeverity = signal<'all' | 'critique' | 'moyen' | 'faible'>('all');
+  copiedIndex = signal<number | null>(null);
+  activeTab = signal<Record<number, 'refactored' | 'original'>>({});
 
   filteredSmells = computed(() => {
     const rep = this.report();
@@ -88,5 +93,28 @@ export class QualityAnalysisPanelComponent {
     if (line > 0) {
       this.selectLine.emit(line);
     }
+  }
+
+  setTab(index: number, tab: 'refactored' | 'original') {
+    this.activeTab.update(m => ({ ...m, [index]: tab }));
+  }
+
+  getTab(index: number): 'refactored' | 'original' {
+    return this.activeTab()[index] ?? 'refactored';
+  }
+
+  copyCode(code: string, index: number, event?: Event) {
+    if (event) {
+      event.stopPropagation();
+    }
+    if (!code) return;
+    navigator.clipboard.writeText(code).then(() => {
+      this.copiedIndex.set(index);
+      setTimeout(() => {
+        if (this.copiedIndex() === index) {
+          this.copiedIndex.set(null);
+        }
+      }, 2500);
+    });
   }
 }

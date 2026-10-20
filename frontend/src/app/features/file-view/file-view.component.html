@@ -97,6 +97,7 @@
             [report]="qualityReport()"
             [isLoading]="isQualityLoading()"
             [filename]="f.filename"
+            [language]="f.language || 'java'"
             (analyze)="triggerQualityAnalysis()"
             (exportPdf)="exportPdf()"
             (exportMarkdown)="exportMarkdown()"

@@ -9,4 +9,5 @@ import java.util.List;
 public interface AILogRepository extends JpaRepository<AILog, Long> {
 
     List<AILog> findTop50ByOrderByCreatedAtDesc();
+    List<AILog> findTop100ByOrderByCreatedAtDesc();
 }

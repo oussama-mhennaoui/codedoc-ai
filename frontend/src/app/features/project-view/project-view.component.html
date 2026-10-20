@@ -179,6 +179,143 @@
           </div>
         </div>
       </mat-tab>
+
+      <!-- Tab 3: Qualité & Dette Technique -->
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon class="tab-icon">verified</mat-icon>
+          <span>Qualité & Dette</span>
+          @if (qualitySummary(); as qs) {
+            <span class="tab-badge" [class.good]="qs.averageScore >= 80" [class.medium]="qs.averageScore >= 50 && qs.averageScore < 80" [class.poor]="qs.averageScore < 50">
+              {{ qs.averageScore }}/100
+            </span>
+          }
+        </ng-template>
+
+        <div class="files-tab-content">
+          <div class="table-actions">
+            <div>
+              <h2>Qualité Globale & Dette Technique du Projet</h2>
+              <p class="section-subtitle">Visualisation de la dette technique et des code smells par fichier</p>
+            </div>
+            <button mat-stroked-button color="primary" (click)="loadQualitySummary()" [disabled]="isQualityLoading()">
+              <mat-icon>refresh</mat-icon>
+              Actualiser
+            </button>
+          </div>
+
+          @if (isQualityLoading()) {
+            <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+          }
+
+          @if (qualitySummary(); as summary) {
+            <!-- Global summary cards -->
+            <div class="quality-summary-cards">
+              <div class="summary-metric-card" [class.good]="summary.averageScore >= 80" [class.medium]="summary.averageScore >= 50 && summary.averageScore < 80" [class.poor]="summary.averageScore < 50">
+                <span class="metric-title">Score Moyen Qualité</span>
+                <div class="metric-val">
+                  <span class="large-num">{{ summary.averageScore }}</span>
+                  <span class="denom">/ 100</span>
+                </div>
+              </div>
+
+              <div class="summary-metric-card">
+                <span class="metric-title">Dette Technique Totale</span>
+                <div class="metric-val">
+                  <span class="large-num">{{ summary.totalTechnicalDebtMinutes }}</span>
+                  <span class="denom">min</span>
+                </div>
+              </div>
+
+              <div class="summary-metric-card">
+                <span class="metric-title">Code Smells Détectés</span>
+                <div class="metric-val">
+                  <span class="large-num">{{ summary.totalCodeSmells }}</span>
+                  <span class="denom">smells</span>
+                </div>
+              </div>
+
+              <div class="summary-metric-card" [class.has-crit]="summary.totalCriticalSmells > 0">
+                <span class="metric-title">Problèmes Critiques</span>
+                <div class="metric-val">
+                  <span class="large-num">{{ summary.totalCriticalSmells }}</span>
+                  <span class="denom">critiques</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Table of files quality -->
+            <div class="table-container">
+              <table mat-table [dataSource]="summary.fileSummaries" class="full-width-table">
+                <ng-container matColumnDef="filename">
+                  <th mat-header-cell *matHeaderCellDef>Fichier Source</th>
+                  <td mat-cell *matCellDef="let f">
+                    <div class="filename-cell">
+                      <mat-icon>code</mat-icon>
+                      <span class="file-link" (click)="viewFile(f.fileId)">{{ f.filename }}</span>
+                    </div>
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="score">
+                  <th mat-header-cell *matHeaderCellDef>Score Qualité</th>
+                  <td mat-cell *matCellDef="let f">
+                    @if (f.analyzed) {
+                      <div class="score-pill" [class.good]="f.scoreGlobal >= 80" [class.medium]="f.scoreGlobal >= 50 && f.scoreGlobal < 80" [class.poor]="f.scoreGlobal < 50">
+                        {{ f.scoreGlobal }}/100
+                      </div>
+                    } @else {
+                      <span class="not-analyzed-tag">Non analysé</span>
+                    }
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="debt">
+                  <th mat-header-cell *matHeaderCellDef>Dette Technique</th>
+                  <td mat-cell *matCellDef="let f">
+                    @if (f.analyzed) {
+                      <span class="debt-tag" [class]="'debt-' + f.technicalDebtRating">
+                        {{ f.technicalDebtMinutes }} min ({{ f.technicalDebtRating }})
+                      </span>
+                    } @else {
+                      <span class="text-muted">—</span>
+                    }
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="smells">
+                  <th mat-header-cell *matHeaderCellDef>Code Smells</th>
+                  <td mat-cell *matCellDef="let f">
+                    @if (f.analyzed) {
+                      <div class="smells-count-pill">
+                        <span>{{ f.codeSmellsCount }} smells</span>
+                        @if (f.criticalSmellsCount > 0) {
+                          <span class="crit-badge">{{ f.criticalSmellsCount }} critiques</span>
+                        }
+                      </div>
+                    } @else {
+                      <span class="text-muted">—</span>
+                    }
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="actions">
+                  <th mat-header-cell *matHeaderCellDef class="actions-header"></th>
+                  <td mat-cell *matCellDef="let f" class="actions-cell">
+                    <button mat-flat-button color="primary" (click)="viewFile(f.fileId)" matTooltip="Consulter l'analyse de qualité et les suggestions">
+                      <mat-icon>visibility</mat-icon>
+                      <span>{{ f.analyzed ? 'Consulter' : 'Analyser' }}</span>
+                    </button>
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="qualityColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: qualityColumns;" class="file-row"></tr>
+              </table>
+            </div>
+          }
+        </div>
+      </mat-tab>
     </mat-tab-group>
   }
 </div>

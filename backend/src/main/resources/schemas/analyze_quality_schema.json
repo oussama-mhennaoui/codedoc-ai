@@ -1,0 +1,157 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Analyze Quality and Code Smells Response",
+  "description": "Schema for code quality analysis, code smells, SOLID compliance, and technical debt evaluation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "score_global",
+    "code_smells",
+    "respect_solid",
+    "duplication",
+    "complexite",
+    "dette_technique"
+  ],
+  "properties": {
+    "score_global": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Global quality score between 0 and 100"
+    },
+    "code_smells": {
+      "type": "array",
+      "description": "List of detected code smells with location and refactoring suggestions",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "type",
+          "fichier",
+          "ligne",
+          "gravite",
+          "description",
+          "suggestion_refactoring"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "Category or name of the code smell"
+          },
+          "fichier": {
+            "type": "string",
+            "description": "File name where the smell is located"
+          },
+          "ligne": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Line number where the issue occurs"
+          },
+          "gravite": {
+            "type": "string",
+            "enum": ["critique", "moyen", "faible"],
+            "description": "Severity level of the code smell"
+          },
+          "description": {
+            "type": "string",
+            "description": "Detailed explanation of the issue"
+          },
+          "suggestion_refactoring": {
+            "type": "string",
+            "description": "Actionable refactoring recommendation"
+          }
+        }
+      }
+    },
+    "respect_solid": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["srp", "ocp", "lsp", "isp", "dip", "resume"],
+      "properties": {
+        "srp": {
+          "type": "string",
+          "description": "Single Responsibility Principle assessment"
+        },
+        "ocp": {
+          "type": "string",
+          "description": "Open/Closed Principle assessment"
+        },
+        "lsp": {
+          "type": "string",
+          "description": "Liskov Substitution Principle assessment"
+        },
+        "isp": {
+          "type": "string",
+          "description": "Interface Segregation Principle assessment"
+        },
+        "dip": {
+          "type": "string",
+          "description": "Dependency Inversion Principle assessment"
+        },
+        "resume": {
+          "type": "string",
+          "description": "Global summary of SOLID compliance"
+        }
+      }
+    },
+    "duplication": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pourcentage_estime", "details"],
+      "properties": {
+        "pourcentage_estime": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Estimated percentage of duplicated code"
+        },
+        "details": {
+          "type": "string",
+          "description": "Details regarding detected duplications"
+        }
+      }
+    },
+    "complexite": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["score_cyclomatique", "score_cognitif", "details"],
+      "properties": {
+        "score_cyclomatique": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Estimated cyclomatic complexity score"
+        },
+        "score_cognitif": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Estimated cognitive complexity score"
+        },
+        "details": {
+          "type": "string",
+          "description": "Analysis of nested structures, loops, branching"
+        }
+      }
+    },
+    "dette_technique": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["estimation_minutes", "niveau", "resume"],
+      "properties": {
+        "estimation_minutes": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Estimated refactoring effort in minutes"
+        },
+        "niveau": {
+          "type": "string",
+          "enum": ["faible", "moyen", "eleve", "critique"],
+          "description": "Overall technical debt severity"
+        },
+        "resume": {
+          "type": "string",
+          "description": "Summary of technical debt"
+        }
+      }
+    }
+  }
+}

@@ -76,8 +76,8 @@
             <h4>Comment puis-je vous aider ?</h4>
             <p>Posez une question sur le code de ce projet</p>
             <div class="suggestions">
-              @for (q of suggestedQuestions(); track q) {
-                <button class="suggestion-chip" (click)="useSuggestion(q)" id="suggestion-{{ $index }}">
+              @for (q of suggestedQuestions(); track q; let i = $index) {
+                <button class="suggestion-chip" (click)="useSuggestion(q)" id="suggestion-{{ i }}">
                   {{ q }}
                 </button>
               }
@@ -86,7 +86,7 @@
         }
 
         <!-- Messages -->
-        @for (msg of messages(); track $index; let i = $index) {
+        @for (msg of messages(); track msg; let i = $index) {
           <div class="message" [class.user]="msg.role === 'USER'" [class.assistant]="msg.role === 'ASSISTANT'">
             @if (msg.role === 'ASSISTANT') {
               <div class="msg-avatar">

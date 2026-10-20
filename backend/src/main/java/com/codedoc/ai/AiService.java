@@ -206,7 +206,7 @@ public class AiService {
         });
     }
 
-    private AiResult processLlmCall(String prompt, String schemaName) {
+    public AiResult processLlmCall(String prompt, String schemaName) {
         String rawSchema = schemaValidator.getRawSchema(schemaName);
         String finalPrompt = prompt + "\n\nEXPECTED JSON SCHEMA:\n```json\n" + rawSchema + "\n```\n";
         LlmResponse response = llmClient.call(finalPrompt);
@@ -214,7 +214,7 @@ public class AiService {
         return AiResult.ok(response.data(), response.totalTokens());
     }
 
-    private AiResult executeAiTask(String endpoint, Supplier<AiResult> task) {
+    public AiResult executeAiTask(String endpoint, Supplier<AiResult> task) {
         long startTime = System.currentTimeMillis();
         User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         

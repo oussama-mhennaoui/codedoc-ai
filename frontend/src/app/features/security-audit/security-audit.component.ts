@@ -142,18 +142,30 @@ export class SecurityAuditComponent implements OnInit {
 
   getSeverityColor(severity: Severity): string {
     switch (severity) {
-      case Severity.CRITICAL: return 'error-bg';
-      case Severity.HIGH: return 'warn-bg';
-      case Severity.MEDIUM: return 'accent-bg';
-      case Severity.LOW: return 'info-bg';
-      default: return 'default-bg';
+      case Severity.CRITICAL: return 'critical';
+      case Severity.HIGH: return 'high';
+      case Severity.MEDIUM: return 'medium';
+      case Severity.LOW: return 'low';
+      default: return 'info';
     }
   }
 
   getScoreColor(score: string): string {
-    if (['A', 'B'].includes(score)) return 'score-good';
-    if (['C', 'D'].includes(score)) return 'score-medium';
-    return 'score-bad';
+    if (['A', 'B'].includes(score)) return 'score-excellent';
+    if (['C'].includes(score)) return 'score-good';
+    if (['D'].includes(score)) return 'score-fair';
+    return 'score-poor';
+  }
+
+  getScoreRank(score: string): string {
+    switch (score) {
+      case 'A': return 'Excellent';
+      case 'B': return 'Good';
+      case 'C': return 'Fair';
+      case 'D': return 'Weak';
+      case 'F': return 'Critical';
+      default: return 'Unknown';
+    }
   }
 
   private handleAiError(err: any) {

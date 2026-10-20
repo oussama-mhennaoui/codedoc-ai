@@ -1,42 +1,39 @@
-<div class="app-container">
+<div class="app-layout" [class.authenticated]="authService.user() && !isLandingPage()">
+  
   @if (authService.user() && !isLandingPage()) {
-    <mat-toolbar color="primary" class="main-toolbar mat-elevation-z4">
-      <div class="toolbar-content">
-        <a routerLink="/dashboard" class="brand">
-          <mat-icon class="brand-icon">description</mat-icon>
-          <span>Code Docs</span>
-        </a>
-        
-        <span class="spacer"></span>
-        
-        <div class="user-section">
-          <button mat-button [matMenuTriggerFor]="userMenu" class="user-button">
-            <mat-icon>account_circle</mat-icon>
-            <span class="username">{{ authService.user()?.username }}</span>
-            <mat-icon>expand_more</mat-icon>
-          </button>
-          
-          <mat-menu #userMenu="matMenu" xPosition="before">
-            <button mat-menu-item routerLink="/dashboard">
-              <mat-icon>dashboard</mat-icon>
-              <span>Dashboard</span>
-            </button>
-            <button mat-menu-item routerLink="/unit-test-generator">
-              <mat-icon>science</mat-icon>
-              <span>Test Generator</span>
-            </button>
-            <mat-divider></mat-divider>
-            <button mat-menu-item (click)="logout()">
-              <mat-icon>logout</mat-icon>
-              <span>Logout</span>
-            </button>
-          </mat-menu>
-        </div>
-      </div>
-    </mat-toolbar>
+    <app-sidebar></app-sidebar>
   }
 
-  <main class="main-content" [class.has-toolbar]="authService.user() && !isLandingPage()">
-    <router-outlet />
-  </main>
+  <div class="main-wrapper">
+    @if (authService.user() && !isLandingPage()) {
+      <header class="top-bar">
+        <div class="top-bar-left">
+          <button mat-icon-button class="mobile-menu-btn" (click)="layoutService.toggleSidebar()">
+            <mat-icon>menu</mat-icon>
+          </button>
+          
+          <!-- Contextual Breadcrumbs could go here -->
+          <div class="breadcrumbs" *ngIf="!layoutService.isHandset()">
+            <span class="breadcrumb-item">Workspace</span>
+            <mat-icon class="breadcrumb-separator">chevron_right</mat-icon>
+            <span class="breadcrumb-item active">{{ title }}</span>
+          </div>
+        </div>
+
+        <div class="top-bar-right">
+          <button mat-icon-button matTooltip="Notifications">
+            <mat-icon>notifications_none</mat-icon>
+          </button>
+          
+          <button mat-icon-button matTooltip="Search (Ctrl+K)">
+            <mat-icon>search</mat-icon>
+          </button>
+        </div>
+      </header>
+    }
+
+    <main class="main-content">
+      <router-outlet />
+    </main>
+  </div>
 </div>

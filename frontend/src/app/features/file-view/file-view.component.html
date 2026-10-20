@@ -1,12 +1,12 @@
 <div class="file-view-container">
   @if (isLoading()) {
-    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    <mat-progress-bar mode="indeterminate" class="loader"></mat-progress-bar>
   }
 
   @if (file(); as f) {
-    <div class="header">
+    <header class="header">
       <div class="title-section">
-        <button mat-icon-button [routerLink]="['/projects', id()]" matTooltip="Retour au Projet">
+        <button mat-icon-button [routerLink]="['/projects', id()]" matTooltip="Back to Project" class="back-btn">
           <mat-icon>arrow_back</mat-icon>
         </button>
         <div>
@@ -14,10 +14,11 @@
           <div class="metadata">
             <span class="badge">{{ f.language }}</span>
             <span class="info-item"><mat-icon>storage</mat-icon> {{ formatBytes(f.sizeBytes) }}</span>
-            <span class="info-item"><mat-icon>history</mat-icon> {{ f.uploadedAt | date:'medium' }}</span>
+            <span class="info-item"><mat-icon>schedule</mat-icon> {{ f.uploadedAt | date:'mediumDate' }}</span>
             @if (qualityReport(); as q) {
               <span class="quality-mini-badge" [class.good]="q.scoreGlobal >= 80" [class.medium]="q.scoreGlobal >= 50 && q.scoreGlobal < 80" [class.poor]="q.scoreGlobal < 50">
-                <mat-icon>verified</mat-icon> Score: {{ q.scoreGlobal }}/100
+                <mat-icon>verified</mat-icon> 
+                Score: {{ q.scoreGlobal }}/100
               </span>
             }
           </div>
@@ -27,56 +28,71 @@
         <button mat-flat-button color="primary" (click)="triggerQualityAnalysis()" [disabled]="isQualityLoading()">
           @if (isQualityLoading()) {
             <mat-spinner diameter="18" class="inline-spinner"></mat-spinner>
-            <span>Analyse en cours...</span>
+            <span>Analyzing...</span>
           } @else {
             <mat-icon>verified</mat-icon>
-            <span>{{ qualityReport() ? 'Réanalyser Qualité' : 'Analyser Qualité' }}</span>
+            <span>{{ qualityReport() ? 'Re-analyze' : 'Analyze Quality' }}</span>
           }
         </button>
-        <button mat-stroked-button color="warn" [routerLink]="['/projects', id(), 'files', fileId(), 'audit']" matTooltip="Perform security audit">
+        
+        <button mat-stroked-button color="warn" [routerLink]="['/projects', id(), 'files', fileId(), 'audit']">
           <mat-icon>security</mat-icon>
           Security Audit
         </button>
-        <button mat-stroked-button color="primary" (click)="detectComplexity()" [disabled]="isAiLoading()" matTooltip="Analyze code complexity">
-          <mat-icon>psychology</mat-icon>
-          Detect Complexity
-        </button>
-        <!-- Module 3 — Bouton Expliquer avec l'IA -->
-        <button id="explain-with-ai-btn" mat-stroked-button (click)="explainWithAI()" matTooltip="Poser une question sur ce fichier à l'IA">
+
+        <button mat-stroked-button (click)="explainWithAI()">
           <mat-icon>smart_toy</mat-icon>
-          Expliquer avec l'IA
+          Explain Code
         </button>
+
         @if (docId()) {
-          <button mat-stroked-button color="primary" [routerLink]="['/docs', docId()]" matTooltip="Voir la documentation technique">
+          <button mat-flat-button color="accent" [routerLink]="['/docs', docId()]">
             <mat-icon>menu_book</mat-icon>
-            Voir Docs
+            View Docs
           </button>
         } @else {
-          <button mat-flat-button color="accent" (click)="generateDoc()" [disabled]="isAiLoading()" matTooltip="Générer la documentation IA">
+          <button mat-flat-button color="accent" (click)="generateDoc()" [disabled]="isAiLoading()">
             <mat-icon>auto_awesome</mat-icon>
-            Générer Docs
+            Generate Docs
           </button>
         }
       </div>
-    </div>
+    </header>
 
-    <!-- Tabbed View: Qualité & Code Smells + Code Source -->
-    <mat-tab-group class="file-tabs" [selectedIndex]="selectedTabIndex()" (selectedIndexChange)="selectedTabIndex.set($event)">
-      <!-- Tab 1: Qualité & Code Smells -->
+    <mat-tab-group class="file-tabs" [selectedIndex]="selectedTabIndex()" (selectedIndexChange)="selectedTabIndex.set($event)" animationDuration="0ms">
+      <!-- Tab 1: Code Source -->
       <mat-tab>
         <ng-template mat-tab-label>
-          <div class="tab-label-content">
-            <mat-icon class="tab-icon">verified</mat-icon>
-            <span>Qualité & Code Smells</span>
-            @if (qualityReport(); as rep) {
-              <span class="tab-badge" [class.good]="rep.scoreGlobal >= 80" [class.medium]="rep.scoreGlobal >= 50 && rep.scoreGlobal < 80" [class.poor]="rep.scoreGlobal < 50">
-                {{ rep.scoreGlobal }}
-              </span>
-            }
-          </div>
+          <mat-icon class="tab-icon">code</mat-icon>
+          <span>Source Code</span>
         </ng-template>
 
-        <div class="tab-inner-content">
+        <div class="tab-pane">
+          <mat-card class="code-card">
+            <mat-card-header>
+              <mat-card-title>{{ f.filename }}</mat-card-title>
+              <mat-card-subtitle>SHA-256: {{ f.checksum }}</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+              <app-code-viewer [code]="f.content" [language]="f.language"></app-code-viewer>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </mat-tab>
+
+      <!-- Tab 2: Quality Analysis -->
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon class="tab-icon">analytics</mat-icon>
+          <span>Quality Report</span>
+          @if (qualityReport(); as rep) {
+            <span class="tab-badge" [class.good]="rep.scoreGlobal >= 80" [class.medium]="rep.scoreGlobal >= 50 && rep.scoreGlobal < 80" [class.poor]="rep.scoreGlobal < 50">
+              {{ rep.scoreGlobal }}
+            </span>
+          }
+        </ng-template>
+
+        <div class="tab-pane">
           <app-quality-analysis-panel
             [report]="qualityReport()"
             [isLoading]="isQualityLoading()"
@@ -88,49 +104,12 @@
           </app-quality-analysis-panel>
         </div>
       </mat-tab>
-
-      <!-- Tab 2: Code Source -->
-      <mat-tab>
-        <ng-template mat-tab-label>
-          <div class="tab-label-content">
-            <mat-icon class="tab-icon">code</mat-icon>
-            <span>Code Source</span>
-          </div>
-        </ng-template>
-
-        <div class="tab-inner-content">
-          <mat-card class="code-card">
-            <mat-card-header>
-              <mat-card-title>Code Source : {{ f.filename }}</mat-card-title>
-              <mat-card-subtitle>Checksum SHA-256 : {{ f.checksum }}</mat-card-subtitle>
-            </mat-card-header>
-            <mat-card-content>
-              <app-code-viewer [code]="f.content" [language]="f.language"></app-code-viewer>
-            </mat-card-content>
-          </mat-card>
-        </div>
-      </mat-tab>
     </mat-tab-group>
   }
 </div>
 
-<ng-template #complexityDialog>
-  <h2 mat-dialog-title>Détection de Complexité</h2>
-  <mat-dialog-content>
-    @if (complexityResult(); as res) {
-      <p><strong>Score :</strong> {{ res.score }}</p>
-      <p><strong>Détails :</strong> {{ res.details }}</p>
-    }
-  </mat-dialog-content>
-  <mat-dialog-actions align="end">
-    <button mat-button mat-dialog-close>Fermer</button>
-  </mat-dialog-actions>
-</ng-template>
-
-<!-- Module 3 — Chatbot RAG flottant -->
-@if (file()) {
-  <app-chatbot
-    [projectId]="+id()"
-    [initialQuestion]="explainQuestion()">
-  </app-chatbot>
-}
+<app-chatbot
+  *ngIf="file()"
+  [projectId]="+id()"
+  [initialQuestion]="explainQuestion()">
+</app-chatbot>

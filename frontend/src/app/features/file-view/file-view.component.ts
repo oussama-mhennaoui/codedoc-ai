@@ -63,12 +63,9 @@ export class FileViewComponent implements OnInit {
   isQualityLoading = signal(false);
   qualityReport = signal<QualityReport | null>(null);
   docId = signal<string | null>(null);
-  complexityResult = signal<{ score: string, details: string } | null>(null);
   selectedTabIndex = signal<number>(0);
   // Module 3 — Chatbot
   explainQuestion = signal<string | null>(null);
-
-  @ViewChild('complexityDialog') complexityDialog!: TemplateRef<any>;
 
   ngOnInit() {
     this.loadFile();
@@ -191,40 +188,17 @@ export class FileViewComponent implements OnInit {
     if (isNaN(fId)) return;
 
     this.isAiLoading.set(true);
-    this.aiService.generateDoc({ fileId: fId }).pipe(
-      finalize(() => this.isAiLoading.set(false))
-    ).subscribe({
-      next: (res: any) => {
-        const data = res.data || {};
-        const docId = data.docId;
-        if (!docId) {
-          this.snackBar.open('Documentation generated but no ID returned. Please rebuild the backend.', 'Close', { duration: 6000, panelClass: ['error-snackbar'] });
-          return;
-        }
-        this.snackBar.open('Documentation generated successfully', 'Close', { duration: 3000 });
-        this.router.navigate(['/docs', docId]);
+    this.aiService.generateDoc({ fileId: fId }).subscribe({
+      next: (resp) => {
+        this.isAiLoading.set(false);
+        this.snackBar.open('Documentation generated successfully!', 'Open', { duration: 5000 })
+          .onAction().subscribe(() => this.router.navigate(['/docs', resp.docId]));
+        this.checkExistingDoc();
       },
-      error: (err) => this.handleAiError(err)
-    });
-  }
-
-  detectComplexity() {
-    const fId = parseInt(this.fileId(), 10);
-    if (isNaN(fId)) return;
-
-    this.isAiLoading.set(true);
-    this.complexityResult.set(null);
-    this.aiService.detectComplexity({ fileId: fId }).pipe(
-      finalize(() => this.isAiLoading.set(false))
-    ).subscribe({
-      next: (res: any) => {
-        const data = res.data || res || {};
-        const score = data.complexityScore ?? data.score ?? 'N/A';
-        const details = data.overallAssessment ?? data.details ?? 'No details returned';
-        this.complexityResult.set({ score: String(score), details });
-        this.dialog.open(this.complexityDialog, { width: '500px' });
-      },
-      error: (err) => this.handleAiError(err)
+      error: () => {
+        this.isAiLoading.set(false);
+        this.snackBar.open('Error generating documentation', 'Close', { duration: 3000 });
+      }
     });
   }
 

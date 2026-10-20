@@ -1,0 +1,111 @@
+<aside 
+  class="sidebar" 
+  [class.collapsed]="layoutService.isSidebarCollapsed()"
+  [class.mobile-open]="layoutService.isMobileMenuOpen()"
+>
+  <!-- Brand Header -->
+  <div class="sidebar-header">
+    <div class="brand">
+      <div class="brand-logo">
+        <mat-icon>description</mat-icon>
+      </div>
+      <span class="brand-name">CodeDoc AI</span>
+    </div>
+    <button mat-icon-button class="collapse-btn" (click)="layoutService.toggleSidebar()">
+      <mat-icon>{{ layoutService.isSidebarCollapsed() ? 'chevron_right' : 'chevron_left' }}</mat-icon>
+    </button>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="sidebar-nav">
+    <div class="nav-section">
+      <span class="section-label" *ngIf="!layoutService.isSidebarCollapsed()">Main Navigation</span>
+      <ul class="nav-list">
+        <li *ngFor="let item of navItems">
+          <a 
+            [routerLink]="item.route" 
+            routerLinkActive="active" 
+            [routerLinkActiveOptions]="{exact: item.exact || false}"
+            class="nav-link"
+            [matTooltip]="layoutService.isSidebarCollapsed() ? item.label : ''"
+            matTooltipPosition="right"
+            (click)="layoutService.isHandset() && layoutService.closeMobileMenu()"
+          >
+            <mat-icon class="nav-icon">{{ item.icon }}</mat-icon>
+            <span class="nav-label" *ngIf="!layoutService.isSidebarCollapsed()">{{ item.label }}</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Contextual Project Navigation (if active) -->
+    <div class="nav-section" *ngIf="activeProjectId()">
+      <span class="section-label" *ngIf="!layoutService.isSidebarCollapsed()">Active Project</span>
+      
+      <div class="active-project-info" *ngIf="!layoutService.isSidebarCollapsed() && activeProjectName()">
+        <mat-icon>folder</mat-icon>
+        <span class="project-name">{{ activeProjectName() }}</span>
+      </div>
+
+      <ul class="nav-list">
+        <li>
+          <a 
+            [routerLink]="['/projects', activeProjectId()]" 
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{exact: true}"
+            class="nav-link"
+            [matTooltip]="layoutService.isSidebarCollapsed() ? 'Project Overview' : ''"
+            matTooltipPosition="right"
+            (click)="layoutService.isHandset() && layoutService.closeMobileMenu()"
+          >
+            <mat-icon class="nav-icon">folder_open</mat-icon>
+            <span class="nav-label" *ngIf="!layoutService.isSidebarCollapsed()">Overview</span>
+          </a>
+        </li>
+        <!-- Only show Audit link if we are in a file view or audit view -->
+        <li *ngIf="activeFileId()">
+          <a 
+            [routerLink]="['/projects', activeProjectId(), 'files', activeFileId(), 'audit']" 
+            routerLinkActive="active"
+            class="nav-link"
+            [matTooltip]="layoutService.isSidebarCollapsed() ? 'Security Audit' : ''"
+            matTooltipPosition="right"
+            (click)="layoutService.isHandset() && layoutService.closeMobileMenu()"
+          >
+            <mat-icon class="nav-icon">security</mat-icon>
+            <span class="nav-label" *ngIf="!layoutService.isSidebarCollapsed()">Security Audit</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- User Footer -->
+  <div class="sidebar-footer">
+    <div class="user-profile" *ngIf="authService.user()">
+      <div class="user-avatar">
+        {{ authService.user()?.username?.substring(0, 1)?.toUpperCase() }}
+      </div>
+      <div class="user-info" *ngIf="!layoutService.isSidebarCollapsed()">
+        <span class="username">{{ authService.user()?.username }}</span>
+        <span class="user-role">Developer</span>
+      </div>
+      <button 
+        mat-icon-button 
+        class="logout-btn" 
+        (click)="logout()"
+        [matTooltip]="layoutService.isSidebarCollapsed() ? 'Logout' : ''"
+        matTooltipPosition="right"
+      >
+        <mat-icon>logout</mat-icon>
+      </button>
+    </div>
+  </div>
+</aside>
+
+<!-- Mobile Backdrop -->
+<div 
+  class="sidebar-backdrop" 
+  *ngIf="layoutService.isHandset() && layoutService.isMobileMenuOpen()"
+  (click)="layoutService.closeMobileMenu()"
+></div>

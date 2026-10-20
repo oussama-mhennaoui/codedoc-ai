@@ -9,8 +9,8 @@
       <p class="subtitle">Generate comprehensive unit tests from your source code using AI</p>
     </div>
     <div class="header-actions">
-      <button mat-stroked-button (click)="loadHistory()" class="history-btn">
-        <mat-icon>history</mat-icon>
+      <button mat-button (click)="loadHistory()" class="history-btn">
+        <mat-icon>{{ showHistory() ? 'history_toggle_off' : 'history' }}</mat-icon>
         <span>{{ showHistory() ? 'Hide History' : 'History' }}</span>
       </button>
     </div>
@@ -18,7 +18,7 @@
 
   <!-- History Panel -->
   @if (showHistory()) {
-    <div class="history-panel content-card mat-elevation-z2">
+    <div class="history-panel content-card">
       <h3><mat-icon>history</mat-icon> Generation History</h3>
       @if (history().length === 0) {
         <p class="empty-text">No previous generations found.</p>
@@ -42,15 +42,15 @@
 
   <div class="main-content-grid">
     <!-- Left: Input Panel -->
-    <div class="input-panel content-card mat-elevation-z2">
-      <h3><mat-icon>code</mat-icon> Source Code Input</h3>
+    <div class="input-panel content-card">
+      <h3><mat-icon>code</mat-icon> Source Input</h3>
 
       <!-- Input Mode Toggle -->
       <div class="mode-toggle">
-        <button mat-stroked-button [class.active]="inputMode() === 'paste'" (click)="inputMode.set('paste')">
+        <button mat-button [class.active]="inputMode() === 'paste'" (click)="inputMode.set('paste')">
           <mat-icon>content_paste</mat-icon> Paste Code
         </button>
-        <button mat-stroked-button [class.active]="inputMode() === 'file'" (click)="inputMode.set('file')">
+        <button mat-button [class.active]="inputMode() === 'file'" (click)="inputMode.set('file')">
           <mat-icon>folder_open</mat-icon> Select File
         </button>
       </div>
@@ -80,7 +80,7 @@
         }
 
         @if (isLoadingFiles()) {
-          <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+          <mat-progress-bar mode="indeterminate" class="mb-4"></mat-progress-bar>
         }
       }
 
@@ -108,7 +108,7 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Test Framework</mat-label>
+          <mat-label>Framework</mat-label>
           <mat-select [value]="selectedFramework()" (selectionChange)="selectedFramework.set($event.value)">
             @for (fw of availableFrameworks(); track fw.value) {
               <mat-option [value]="fw.value">{{ fw.label }}</mat-option>
@@ -120,14 +120,14 @@
 
       <!-- Generate Button -->
       <button mat-flat-button color="primary" class="generate-btn"
-              [disabled]="!canGenerate()"
+              [disabled]="!canGenerate() || isLoading()"
               (click)="generate()">
         @if (isLoading()) {
           <mat-spinner diameter="20"></mat-spinner>
-          <span>Generating tests...</span>
+          <span>Generating...</span>
         } @else {
-          <mat-icon>auto_fix_high</mat-icon>
-          <span>Generate Unit Tests</span>
+          <mat-icon>auto_awesome</mat-icon>
+          <span>Generate Tests</span>
         }
       </button>
     </div>
@@ -135,8 +135,7 @@
     <!-- Right: Results Panel -->
     <div class="results-panel">
       @if (isLoading()) {
-        <div class="content-card mat-elevation-z2 loading-card">
-          <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        <div class="content-card loading-card">
           <div class="loading-content">
             <mat-spinner diameter="48"></mat-spinner>
             <h3>Generating unit tests...</h3>
@@ -146,95 +145,96 @@
       }
 
       @if (generationResult(); as result) {
-        <!-- Summary Card -->
-        <div class="content-card mat-elevation-z2 summary-card">
-          <div class="summary-header">
-            <div>
-              <h3><mat-icon>check_circle</mat-icon> Tests Generated Successfully</h3>
-              <p class="summary-text">{{ result.result?.summary }}</p>
-            </div>
-            <div class="summary-actions">
-              <button mat-stroked-button (click)="downloadAll()" matTooltip="Download all test files">
-                <mat-icon>download</mat-icon> Download
-              </button>
-            </div>
-          </div>
-
-          <!-- Metadata -->
-          <div class="meta-chips">
-            <span class="meta-chip language">{{ result.language }}</span>
-            <span class="meta-chip framework">{{ result.testFramework }}</span>
-            <span class="meta-chip files">{{ testFiles().length }} file(s)</span>
-          </div>
-
-          <!-- Assumptions -->
-          @if (result.result?.assumptions?.length) {
-            <div class="assumptions">
-              <h4><mat-icon>info</mat-icon> Assumptions & Limitations</h4>
-              <ul>
-                @for (assumption of result.result!.assumptions!; track assumption) {
-                  <li>{{ assumption }}</li>
-                }
-              </ul>
-            </div>
-          }
-        </div>
-
-        <!-- Test Files -->
-        @if (testFiles().length > 1) {
-          <div class="content-card mat-elevation-z2 files-tabs">
-            <mat-tab-group (selectedIndexChange)="selectedTestFileIndex.set($event)">
-              @for (tf of testFiles(); track tf.filename; let i = $index) {
-                <mat-tab [label]="tf.filename"></mat-tab>
-              }
-            </mat-tab-group>
-          </div>
-        }
-
-        @if (currentTestFile(); as testFile) {
-          <!-- Test List -->
-          <div class="content-card mat-elevation-z2 tests-list-card">
-            <div class="tests-header">
-              <h3><mat-icon>checklist</mat-icon> {{ testFile.filename }}</h3>
-              <div class="test-file-actions">
-                <button mat-icon-button matTooltip="Copy code" (click)="copyCode(testFile.content)">
-                  <mat-icon>content_copy</mat-icon>
-                </button>
-                <button mat-icon-button matTooltip="Download file" (click)="downloadFile(testFile)">
+        @if (!isLoading()) {
+          <!-- Summary Card -->
+          <div class="content-card summary-card">
+            <div class="summary-header">
+              <div>
+                <h3><mat-icon>check_circle</mat-icon> Tests Generated Successfully</h3>
+                <p class="summary-text">{{ result.result?.summary }}</p>
+              </div>
+              <div class="summary-actions">
+                <button mat-flat-button color="accent" (click)="downloadAll()" matTooltip="Download all test files">
                   <mat-icon>download</mat-icon>
+                  <span>Download All</span>
                 </button>
               </div>
             </div>
 
-            <!-- Test Cases -->
-            <div class="test-cases">
-              @for (test of testFile.tests; track test.name) {
-                <div class="test-case">
-                  <div class="test-case-header">
-                    <mat-icon class="test-icon">check_box</mat-icon>
-                    <span class="test-name">{{ test.name }}</span>
-                    <span class="category-badge" [attr.data-category]="test.category">
-                      {{ getCategoryLabel(test.category) }}
-                    </span>
-                  </div>
-                  <p class="test-description">{{ test.description }}</p>
-                </div>
-              }
+            <!-- Metadata -->
+            <div class="meta-chips">
+              <span class="meta-chip language">{{ result.language }}</span>
+              <span class="meta-chip framework">{{ result.testFramework }}</span>
+              <span class="meta-chip files">{{ testFiles().length }} file(s)</span>
             </div>
 
-            <mat-divider></mat-divider>
-
-            <!-- Code Output -->
-            <div class="code-output">
-              <app-code-viewer [code]="testFile.content" [language]="result.language"></app-code-viewer>
-            </div>
+            <!-- Assumptions -->
+            @if (result.result?.assumptions?.length) {
+              <div class="assumptions">
+                <h4><mat-icon>info</mat-icon> Assumptions & Limitations</h4>
+                <ul>
+                  @for (assumption of result.result!.assumptions!; track assumption) {
+                    <li>{{ assumption }}</li>
+                  }
+                </ul>
+              </div>
+            }
           </div>
+
+          <!-- Test Files -->
+          @if (testFiles().length > 1) {
+            <div class="content-card files-tabs">
+              <mat-tab-group (selectedIndexChange)="selectedTestFileIndex.set($event)">
+                @for (tf of testFiles(); track tf.filename; let i = $index) {
+                  <mat-tab [label]="tf.filename"></mat-tab>
+                }
+              </mat-tab-group>
+            </div>
+          }
+
+          @if (currentTestFile(); as testFile) {
+            <!-- Test List -->
+            <div class="content-card tests-list-card">
+              <div class="tests-header">
+                <h3><mat-icon>checklist</mat-icon> {{ testFile.filename }}</h3>
+                <div class="test-file-actions">
+                  <button mat-icon-button matTooltip="Copy code" (click)="copyCode(testFile.content)">
+                    <mat-icon>content_copy</mat-icon>
+                  </button>
+                  <button mat-icon-button matTooltip="Download file" (click)="downloadFile(testFile)">
+                    <mat-icon>download</mat-icon>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Test Cases -->
+              <div class="test-cases">
+                @for (test of testFile.tests; track test.name) {
+                  <div class="test-case">
+                    <div class="test-case-header">
+                      <mat-icon class="test-icon">check_box</mat-icon>
+                      <span class="test-name">{{ test.name }}</span>
+                      <span class="category-badge" [attr.data-category]="test.category">
+                        {{ getCategoryLabel(test.category) }}
+                      </span>
+                    </div>
+                    <p class="test-description">{{ test.description }}</p>
+                  </div>
+                }
+              </div>
+
+              <!-- Code Output -->
+              <div class="code-output">
+                <app-code-viewer [code]="testFile.content" [language]="result.language"></app-code-viewer>
+              </div>
+            </div>
+          }
         }
       }
 
       <!-- Empty State -->
       @if (!generationResult() && !isLoading()) {
-        <div class="content-card mat-elevation-z2 empty-results">
+        <div class="empty-results">
           <mat-icon class="empty-icon">science</mat-icon>
           <h3>Ready to generate tests</h3>
           <p>Paste your source code or select a file from your project, then click "Generate Unit Tests".</p>

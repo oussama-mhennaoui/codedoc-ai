@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["answer", "sources"],
+  "additionalProperties": false,
+  "properties": {
+    "answer": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The assistant's answer to the user's question"
+    },
+    "sources": {
+      "type": "array",
+      "description": "List of source code citations referenced in the answer",
+      "items": {
+        "type": "object",
+        "required": ["filename", "startLine", "endLine", "snippet"],
+        "additionalProperties": false,
+        "properties": {
+          "filename": {
+            "type": "string",
+            "description": "Name of the source file"
+          },
+          "startLine": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Starting line number of the cited code"
+          },
+          "endLine": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Ending line number of the cited code"
+          },
+          "snippet": {
+            "type": "string",
+            "description": "The actual code snippet from the file"
+          }
+        }
+      }
+    }
+  }
+}

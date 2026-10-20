@@ -1,0 +1,251 @@
+<div class="test-generator-container">
+  <!-- Header -->
+  <div class="header">
+    <div class="title-section">
+      <h1>
+        <mat-icon class="title-icon">science</mat-icon>
+        Unit Test Generator
+      </h1>
+      <p class="subtitle">Generate comprehensive unit tests from your source code using AI</p>
+    </div>
+    <div class="header-actions">
+      <button mat-stroked-button (click)="loadHistory()" class="history-btn">
+        <mat-icon>history</mat-icon>
+        <span>{{ showHistory() ? 'Hide History' : 'History' }}</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- History Panel -->
+  @if (showHistory()) {
+    <div class="history-panel content-card mat-elevation-z2">
+      <h3><mat-icon>history</mat-icon> Generation History</h3>
+      @if (history().length === 0) {
+        <p class="empty-text">No previous generations found.</p>
+      } @else {
+        <div class="history-list">
+          @for (item of history(); track item.id) {
+            <div class="history-item" (click)="loadFromHistory(item)">
+              <div class="history-info">
+                <span class="history-file">{{ item.sourceFileName || 'Pasted code' }}</span>
+                <span class="history-meta">{{ item.language }} · {{ item.testFramework }} · {{ item.createdAt | date:'short' }}</span>
+              </div>
+              <mat-icon class="status-icon" [class.success]="item.status === 'SUCCESS'" [class.failed]="item.status === 'FAILED'">
+                {{ item.status === 'SUCCESS' ? 'check_circle' : 'error' }}
+              </mat-icon>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+
+  <div class="main-content-grid">
+    <!-- Left: Input Panel -->
+    <div class="input-panel content-card mat-elevation-z2">
+      <h3><mat-icon>code</mat-icon> Source Code Input</h3>
+
+      <!-- Input Mode Toggle -->
+      <div class="mode-toggle">
+        <button mat-stroked-button [class.active]="inputMode() === 'paste'" (click)="inputMode.set('paste')">
+          <mat-icon>content_paste</mat-icon> Paste Code
+        </button>
+        <button mat-stroked-button [class.active]="inputMode() === 'file'" (click)="inputMode.set('file')">
+          <mat-icon>folder_open</mat-icon> Select File
+        </button>
+      </div>
+
+      <!-- File Selection Mode -->
+      @if (inputMode() === 'file') {
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Project</mat-label>
+          <mat-select (selectionChange)="onProjectChange($event.value)" [value]="selectedProjectId()">
+            @for (project of projects(); track project.id) {
+              <mat-option [value]="project.id">{{ project.name }}</mat-option>
+            }
+          </mat-select>
+          <mat-icon matPrefix>folder</mat-icon>
+        </mat-form-field>
+
+        @if (selectedProjectId()) {
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>File</mat-label>
+            <mat-select (selectionChange)="onFileChange($event.value)" [value]="selectedFileId()">
+              @for (file of files(); track file.id) {
+                <mat-option [value]="file.id">{{ file.filename }}</mat-option>
+              }
+            </mat-select>
+            <mat-icon matPrefix>description</mat-icon>
+          </mat-form-field>
+        }
+
+        @if (isLoadingFiles()) {
+          <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        }
+      }
+
+      <!-- Code Input -->
+      <mat-form-field appearance="outline" class="full-width code-input">
+        <mat-label>{{ inputMode() === 'file' ? 'File Content Preview' : 'Paste your source code here' }}</mat-label>
+        <textarea matInput
+                  [value]="sourceCode()"
+                  (input)="sourceCode.set($any($event.target).value)"
+                  rows="12"
+                  [readonly]="inputMode() === 'file'"
+                  placeholder="Paste your source code here..."></textarea>
+      </mat-form-field>
+
+      <!-- Language & Framework -->
+      <div class="options-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Language</mat-label>
+          <mat-select [value]="selectedLanguage()" (selectionChange)="onLanguageChange($event.value)">
+            @for (lang of languages; track lang.value) {
+              <mat-option [value]="lang.value">{{ lang.label }}</mat-option>
+            }
+          </mat-select>
+          <mat-icon matPrefix>code</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Test Framework</mat-label>
+          <mat-select [value]="selectedFramework()" (selectionChange)="selectedFramework.set($event.value)">
+            @for (fw of availableFrameworks(); track fw.value) {
+              <mat-option [value]="fw.value">{{ fw.label }}</mat-option>
+            }
+          </mat-select>
+          <mat-icon matPrefix>build</mat-icon>
+        </mat-form-field>
+      </div>
+
+      <!-- Generate Button -->
+      <button mat-flat-button color="primary" class="generate-btn"
+              [disabled]="!canGenerate()"
+              (click)="generate()">
+        @if (isLoading()) {
+          <mat-spinner diameter="20"></mat-spinner>
+          <span>Generating tests...</span>
+        } @else {
+          <mat-icon>auto_fix_high</mat-icon>
+          <span>Generate Unit Tests</span>
+        }
+      </button>
+    </div>
+
+    <!-- Right: Results Panel -->
+    <div class="results-panel">
+      @if (isLoading()) {
+        <div class="content-card mat-elevation-z2 loading-card">
+          <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+          <div class="loading-content">
+            <mat-spinner diameter="48"></mat-spinner>
+            <h3>Generating unit tests...</h3>
+            <p>AI is analyzing your code and generating comprehensive tests. This may take a moment.</p>
+          </div>
+        </div>
+      }
+
+      @if (generationResult(); as result) {
+        <!-- Summary Card -->
+        <div class="content-card mat-elevation-z2 summary-card">
+          <div class="summary-header">
+            <div>
+              <h3><mat-icon>check_circle</mat-icon> Tests Generated Successfully</h3>
+              <p class="summary-text">{{ result.result?.summary }}</p>
+            </div>
+            <div class="summary-actions">
+              <button mat-stroked-button (click)="downloadAll()" matTooltip="Download all test files">
+                <mat-icon>download</mat-icon> Download
+              </button>
+            </div>
+          </div>
+
+          <!-- Metadata -->
+          <div class="meta-chips">
+            <span class="meta-chip language">{{ result.language }}</span>
+            <span class="meta-chip framework">{{ result.testFramework }}</span>
+            <span class="meta-chip files">{{ testFiles().length }} file(s)</span>
+          </div>
+
+          <!-- Assumptions -->
+          @if (result.result?.assumptions?.length) {
+            <div class="assumptions">
+              <h4><mat-icon>info</mat-icon> Assumptions & Limitations</h4>
+              <ul>
+                @for (assumption of result.result!.assumptions!; track assumption) {
+                  <li>{{ assumption }}</li>
+                }
+              </ul>
+            </div>
+          }
+        </div>
+
+        <!-- Test Files -->
+        @if (testFiles().length > 1) {
+          <div class="content-card mat-elevation-z2 files-tabs">
+            <mat-tab-group (selectedIndexChange)="selectedTestFileIndex.set($event)">
+              @for (tf of testFiles(); track tf.filename; let i = $index) {
+                <mat-tab [label]="tf.filename"></mat-tab>
+              }
+            </mat-tab-group>
+          </div>
+        }
+
+        @if (currentTestFile(); as testFile) {
+          <!-- Test List -->
+          <div class="content-card mat-elevation-z2 tests-list-card">
+            <div class="tests-header">
+              <h3><mat-icon>checklist</mat-icon> {{ testFile.filename }}</h3>
+              <div class="test-file-actions">
+                <button mat-icon-button matTooltip="Copy code" (click)="copyCode(testFile.content)">
+                  <mat-icon>content_copy</mat-icon>
+                </button>
+                <button mat-icon-button matTooltip="Download file" (click)="downloadFile(testFile)">
+                  <mat-icon>download</mat-icon>
+                </button>
+              </div>
+            </div>
+
+            <!-- Test Cases -->
+            <div class="test-cases">
+              @for (test of testFile.tests; track test.name) {
+                <div class="test-case">
+                  <div class="test-case-header">
+                    <mat-icon class="test-icon">check_box</mat-icon>
+                    <span class="test-name">{{ test.name }}</span>
+                    <span class="category-badge" [attr.data-category]="test.category">
+                      {{ getCategoryLabel(test.category) }}
+                    </span>
+                  </div>
+                  <p class="test-description">{{ test.description }}</p>
+                </div>
+              }
+            </div>
+
+            <mat-divider></mat-divider>
+
+            <!-- Code Output -->
+            <div class="code-output">
+              <app-code-viewer [code]="testFile.content" [language]="result.language"></app-code-viewer>
+            </div>
+          </div>
+        }
+      }
+
+      <!-- Empty State -->
+      @if (!generationResult() && !isLoading()) {
+        <div class="content-card mat-elevation-z2 empty-results">
+          <mat-icon class="empty-icon">science</mat-icon>
+          <h3>Ready to generate tests</h3>
+          <p>Paste your source code or select a file from your project, then click "Generate Unit Tests".</p>
+          <div class="supported-langs">
+            <span class="lang-tag">Java / JUnit 5</span>
+            <span class="lang-tag">JavaScript / Jest</span>
+            <span class="lang-tag">TypeScript / Jest</span>
+            <span class="lang-tag">Python / pytest</span>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>

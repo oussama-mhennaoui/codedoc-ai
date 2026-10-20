@@ -1,48 +1,107 @@
-<div class="auth-container">
-  <mat-card>
-    <mat-card-header>
-      <div class="logo-container">
-        <mat-icon class="logo-icon">description</mat-icon>
-        <mat-card-title>CodeDoc AI</mat-card-title>
-        <mat-card-subtitle>Sign in to your account to continue</mat-card-subtitle>
+<div class="auth-wrapper">
+  <!-- Ambient background glow orbs -->
+  <div class="glow-orb orb-1"></div>
+  <div class="glow-orb orb-2"></div>
+
+  <!-- Top bar with Back to Home -->
+  <header class="auth-top-nav">
+    <a routerLink="/" class="back-home-link">
+      <mat-icon>arrow_back</mat-icon>
+      <span>Back to Home</span>
+    </a>
+  </header>
+
+  <div class="auth-card-container">
+    <div class="auth-glass-card">
+      
+      <!-- Brand Header -->
+      <div class="auth-header">
+        <div class="brand-badge-pill" routerLink="/">
+          <div class="brand-logo-icon">
+            <mat-icon>auto_awesome</mat-icon>
+          </div>
+          <span class="brand-title">CodeDoc AI</span>
+          <span class="brand-tag">PRO</span>
+        </div>
+
+        <h1 class="auth-title">Welcome Back</h1>
+        <p class="auth-subtitle">Sign in to access your technical docs, security audits & test suites</p>
       </div>
-    </mat-card-header>
-    
-    <mat-card-content>
-      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Username</mat-label>
-          <input matInput formControlName="username" placeholder="Enter your username">
-          <mat-icon matPrefix>person</mat-icon>
-          <mat-error *ngIf="loginForm.controls.username.errors?.['required']">
-            Username is required
-          </mat-error>
-        </mat-form-field>
 
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Password</mat-label>
-          <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password" placeholder="Enter your password">
-          <mat-icon matPrefix>lock</mat-icon>
-          <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" type="button" tabindex="-1">
-            <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
-          </button>
-          <mat-error *ngIf="loginForm.controls.password.errors?.['required']">
-            Password is required
-          </mat-error>
-        </mat-form-field>
+      <!-- Login Form -->
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="auth-form">
+        <div class="form-group">
+          <label class="form-label">Username</label>
+          <mat-form-field appearance="outline" class="custom-field">
+            <mat-icon matPrefix class="field-icon">person_outline</mat-icon>
+            <input matInput formControlName="username" placeholder="Enter your username" autocomplete="username">
+            <mat-error *ngIf="loginForm.controls.username.errors?.['required']">
+              Username is required
+            </mat-error>
+          </mat-form-field>
+        </div>
 
-        <div class="actions">
-          <button mat-flat-button color="primary" type="submit" [disabled]="loginForm.invalid || isLoading()">
-            <mat-spinner *ngIf="isLoading()" diameter="20" color="accent" style="margin-right: 8px;"></mat-spinner>
-            <mat-icon *ngIf="!isLoading()">login</mat-icon>
-            <span>{{ isLoading() ? 'Signing in...' : 'Sign In' }}</span>
+        <div class="form-group">
+          <div class="password-label-row">
+            <label class="form-label">Password</label>
+          </div>
+          <mat-form-field appearance="outline" class="custom-field">
+            <mat-icon matPrefix class="field-icon">lock_outline</mat-icon>
+            <input 
+              matInput 
+              [type]="hidePassword ? 'password' : 'text'" 
+              formControlName="password" 
+              placeholder="Enter your password"
+              autocomplete="current-password"
+            >
+            <button 
+              mat-icon-button 
+              matSuffix 
+              (click)="hidePassword = !hidePassword" 
+              type="button" 
+              tabindex="-1"
+              class="visibility-btn"
+              matTooltip="Toggle password visibility"
+            >
+              <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+            <mat-error *ngIf="loginForm.controls.password.errors?.['required']">
+              Password is required
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-actions">
+          <button 
+            mat-flat-button 
+            type="submit" 
+            class="submit-btn" 
+            [disabled]="loginForm.invalid || isLoading()"
+          >
+            @if (isLoading()) {
+              <mat-spinner diameter="20" class="btn-spinner"></mat-spinner>
+              <span>Authenticating...</span>
+            } @else {
+              <span>Sign In</span>
+              <mat-icon>arrow_forward</mat-icon>
+            }
           </button>
         </div>
       </form>
-    </mat-card-content>
-    
-    <div class="auth-footer">
-      <p>New to CodeDoc AI? <a routerLink="/register">Create an account</a></p>
+
+      <!-- Auth Switcher -->
+      <div class="auth-footer-prompt">
+        <span>Don't have an account yet?</span>
+        <a routerLink="/register" class="switch-link">Create an account</a>
+      </div>
+
+      <!-- Trust Security Indicator -->
+      <div class="auth-security-badge">
+        <mat-icon>verified_user</mat-icon>
+        <span>256-bit JWT Encryption • Zero-Knowledge Architecture</span>
+      </div>
+
     </div>
-  </mat-card>
+  </div>
 </div>
+

@@ -6,7 +6,11 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { AuthService } from '../../core/auth/auth.service';
+
+type PreviewTab = 'docs' | 'quality' | 'security' | 'tests';
 
 @Component({
   selector: 'app-landing',
@@ -18,7 +22,9 @@ import { AuthService } from '../../core/auth/auth.service';
     MatButtonModule,
     MatIconModule,
     MatCardModule,
-    MatDividerModule
+    MatDividerModule,
+    MatChipsModule,
+    MatTooltipModule
   ],
   templateUrl: './landing.component.html',
   styleUrl: './landing.component.scss',
@@ -29,14 +35,19 @@ export class LandingComponent implements OnInit {
   private router = inject(Router);
 
   isScrolled = signal(false);
+  activePreviewTab = signal<PreviewTab>('docs');
 
   ngOnInit() {
-    // User is loaded from localStorage on app init
+    // Auth loaded automatically
   }
 
   @HostListener('window:scroll', [])
   onWindowScroll() {
-    this.isScrolled.set(window.scrollY > 10);
+    this.isScrolled.set(window.scrollY > 20);
+  }
+
+  setPreviewTab(tab: PreviewTab) {
+    this.activePreviewTab.set(tab);
   }
 
   goToDashboard() {
@@ -51,10 +62,11 @@ export class LandingComponent implements OnInit {
     this.router.navigate(['/login']);
   }
 
-  scrollToFeatures() {
-    const element = document.getElementById('features');
+  scrollToSection(sectionId: string) {
+    const element = document.getElementById(sectionId);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }
 }
+

@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "score_securite": {
+      "type": "string",
+      "enum": ["A", "B", "C", "D", "E", "F"]
+    },
+    "summary": {
+      "type": "string"
+    },
+    "vulnerabilites": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": { "type": "string" },
+          "severite": {
+            "type": "string",
+            "enum": ["CRITICAL", "HIGH", "MEDIUM", "LOW", "INFO"]
+          },
+          "fichier": { "type": "string" },
+          "ligne": { "type": "integer" },
+          "description": { "type": "string" },
+          "consequences": { "type": "string" },
+          "correctif": { "type": "string" },
+          "cwe_id": { "type": "string" },
+          "code_corrige": { "type": "string" }
+        },
+        "required": ["type", "severite", "description", "correctif"]
+      }
+    }
+  },
+  "required": ["score_securite", "summary", "vulnerabilites"]
+}

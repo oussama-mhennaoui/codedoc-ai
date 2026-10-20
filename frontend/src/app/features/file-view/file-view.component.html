@@ -19,6 +19,10 @@
         </div>
       </div>
       <div class="actions">
+        <button mat-stroked-button color="warn" [routerLink]="['/projects', id(), 'files', fileId(), 'audit']" matTooltip="Perform security audit">
+          <mat-icon>security</mat-icon>
+          Security Audit
+        </button>
         <button mat-stroked-button color="primary" (click)="detectComplexity()" [disabled]="isAiLoading()" matTooltip="Analyze code complexity">
           <mat-icon>psychology</mat-icon>
           Detect Complexity

@@ -5,21 +5,52 @@
 >
   <!-- Brand Header -->
   <div class="sidebar-header">
-    <div class="brand">
+    <div class="brand" routerLink="/dashboard">
       <div class="brand-logo">
-        <mat-icon>description</mat-icon>
+        <mat-icon>auto_awesome</mat-icon>
       </div>
-      <span class="brand-name">CodeDoc AI</span>
+      <div class="brand-details" *ngIf="!layoutService.isSidebarCollapsed()">
+        <span class="brand-name">CodeDoc AI</span>
+        <span class="brand-badge">PRO v1.0</span>
+      </div>
     </div>
-    <button mat-icon-button class="collapse-btn" (click)="layoutService.toggleSidebar()">
+    
+    <button 
+      mat-icon-button 
+      class="collapse-btn" 
+      (click)="layoutService.toggleSidebar()"
+      [matTooltip]="layoutService.isSidebarCollapsed() ? 'Expand sidebar' : 'Collapse sidebar'"
+      matTooltipPosition="right"
+    >
       <mat-icon>{{ layoutService.isSidebarCollapsed() ? 'chevron_right' : 'chevron_left' }}</mat-icon>
+    </button>
+  </div>
+
+  <!-- Quick Action: Create New Project -->
+  <div class="sidebar-quick-action" *ngIf="!layoutService.isSidebarCollapsed()">
+    <button mat-flat-button class="new-project-btn" (click)="openNewProjectDialog()">
+      <mat-icon>add</mat-icon>
+      <span>New Project</span>
+    </button>
+  </div>
+  <div class="sidebar-quick-action collapsed-action" *ngIf="layoutService.isSidebarCollapsed()">
+    <button 
+      mat-icon-button 
+      class="new-project-icon-btn" 
+      (click)="openNewProjectDialog()"
+      matTooltip="Create New Project"
+      matTooltipPosition="right"
+    >
+      <mat-icon>add</mat-icon>
     </button>
   </div>
 
   <!-- Navigation -->
   <nav class="sidebar-nav">
+    
+    <!-- Section: Primary Navigation -->
     <div class="nav-section">
-      <span class="section-label" *ngIf="!layoutService.isSidebarCollapsed()">Main Navigation</span>
+      <span class="section-label" *ngIf="!layoutService.isSidebarCollapsed()">Platform</span>
       <ul class="nav-list">
         <li *ngFor="let item of navItems">
           <a 
@@ -33,18 +64,24 @@
           >
             <mat-icon class="nav-icon">{{ item.icon }}</mat-icon>
             <span class="nav-label" *ngIf="!layoutService.isSidebarCollapsed()">{{ item.label }}</span>
+            <span class="nav-chip" *ngIf="!layoutService.isSidebarCollapsed() && item.badge">{{ item.badge }}</span>
           </a>
         </li>
       </ul>
     </div>
 
-    <!-- Contextual Project Navigation (if active) -->
-    <div class="nav-section" *ngIf="activeProjectId()">
-      <span class="section-label" *ngIf="!layoutService.isSidebarCollapsed()">Active Project</span>
+    <!-- Section: Contextual Active Project (if within a project) -->
+    <div class="nav-section active-project-section" *ngIf="activeProjectId()">
+      <span class="section-label" *ngIf="!layoutService.isSidebarCollapsed()">Active Workspace</span>
       
-      <div class="active-project-info" *ngIf="!layoutService.isSidebarCollapsed() && activeProjectName()">
-        <mat-icon>folder</mat-icon>
-        <span class="project-name">{{ activeProjectName() }}</span>
+      <div class="active-project-card" *ngIf="!layoutService.isSidebarCollapsed()">
+        <div class="project-pill">
+          <mat-icon class="folder-icon">folder</mat-icon>
+          <div class="project-details">
+            <span class="project-title">{{ activeProject()?.name || 'Project #' + activeProjectId() }}</span>
+            <span class="project-lang">{{ activeProject()?.language || 'Codebase' }}</span>
+          </div>
+        </div>
       </div>
 
       <ul class="nav-list">
@@ -59,42 +96,158 @@
             (click)="layoutService.isHandset() && layoutService.closeMobileMenu()"
           >
             <mat-icon class="nav-icon">folder_open</mat-icon>
-            <span class="nav-label" *ngIf="!layoutService.isSidebarCollapsed()">Overview</span>
+            <span class="nav-label" *ngIf="!layoutService.isSidebarCollapsed()">Files & Overview</span>
           </a>
         </li>
-        <!-- Only show Audit link if we are in a file view or audit view -->
+
+        <li>
+          <a 
+            [routerLink]="['/projects', activeProjectId()]"
+            [queryParams]="{tab: 'docs'}"
+            class="nav-link"
+            [matTooltip]="layoutService.isSidebarCollapsed() ? 'AI Documentation' : ''"
+            matTooltipPosition="right"
+            (click)="layoutService.isHandset() && layoutService.closeMobileMenu()"
+          >
+            <mat-icon class="nav-icon">auto_stories</mat-icon>
+            <span class="nav-label" *ngIf="!layoutService.isSidebarCollapsed()">AI Docs Studio</span>
+          </a>
+        </li>
+
+        <li>
+          <a 
+            [routerLink]="['/projects', activeProjectId()]"
+            [queryParams]="{tab: 'quality'}"
+            class="nav-link"
+            [matTooltip]="layoutService.isSidebarCollapsed() ? 'Quality & Technical Debt' : ''"
+            matTooltipPosition="right"
+            (click)="layoutService.isHandset() && layoutService.closeMobileMenu()"
+          >
+            <mat-icon class="nav-icon">verified</mat-icon>
+            <span class="nav-label" *ngIf="!layoutService.isSidebarCollapsed()">Quality & Debt</span>
+          </a>
+        </li>
+
         <li *ngIf="activeFileId()">
           <a 
             [routerLink]="['/projects', activeProjectId(), 'files', activeFileId(), 'audit']" 
             routerLinkActive="active"
-            class="nav-link"
-            [matTooltip]="layoutService.isSidebarCollapsed() ? 'Security Audit' : ''"
+            class="nav-link security-link"
+            [matTooltip]="layoutService.isSidebarCollapsed() ? 'Security Vulnerability Audit' : ''"
             matTooltipPosition="right"
             (click)="layoutService.isHandset() && layoutService.closeMobileMenu()"
           >
-            <mat-icon class="nav-icon">security</mat-icon>
+            <mat-icon class="nav-icon text-warning">security</mat-icon>
             <span class="nav-label" *ngIf="!layoutService.isSidebarCollapsed()">Security Audit</span>
+            <span class="nav-badge-warn" *ngIf="!layoutService.isSidebarCollapsed()">Scan</span>
           </a>
         </li>
       </ul>
     </div>
+
+    <!-- Section: Quick Projects Switcher -->
+    <div class="nav-section projects-section" *ngIf="projects().length > 0">
+      <div class="section-header-flex" *ngIf="!layoutService.isSidebarCollapsed()">
+        <span class="section-label">Projects ({{ projects().length }})</span>
+        <button mat-icon-button class="mini-add-btn" (click)="openNewProjectDialog()" matTooltip="Add Project">
+          <mat-icon>add</mat-icon>
+        </button>
+      </div>
+
+      <ul class="nav-list">
+        <li *ngFor="let proj of projects().slice(0, 5)">
+          <a 
+            [routerLink]="['/projects', proj.id]" 
+            routerLinkActive="active"
+            [class.active-item]="proj.id.toString() === activeProjectId()"
+            class="nav-link project-item-link"
+            [matTooltip]="layoutService.isSidebarCollapsed() ? proj.name + ' (' + proj.language + ')' : ''"
+            matTooltipPosition="right"
+            (click)="layoutService.isHandset() && layoutService.closeMobileMenu()"
+          >
+            <span class="project-dot" [class.current]="proj.id.toString() === activeProjectId()"></span>
+            <span class="nav-label project-name-truncate" *ngIf="!layoutService.isSidebarCollapsed()">{{ proj.name }}</span>
+            <span class="language-pill" *ngIf="!layoutService.isSidebarCollapsed()">{{ proj.language }}</span>
+          </a>
+        </li>
+
+        <li *ngIf="!layoutService.isSidebarCollapsed() && projects().length > 5">
+          <a routerLink="/dashboard" class="nav-link view-all-link">
+            <mat-icon class="nav-icon">more_horiz</mat-icon>
+            <span class="nav-label">View all projects ({{ projects().length }})</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Section: AI Engine Features Hub -->
+    <div class="nav-section engine-section">
+      <span class="section-label" *ngIf="!layoutService.isSidebarCollapsed()">AI Capabilities</span>
+      <ul class="nav-list">
+        <li>
+          <a 
+            routerLink="/unit-test-generator" 
+            class="nav-link feature-nav-link"
+            [matTooltip]="layoutService.isSidebarCollapsed() ? 'Automated Unit Tests' : ''"
+            matTooltipPosition="right"
+          >
+            <mat-icon class="nav-icon text-indigo">science</mat-icon>
+            <span class="nav-label" *ngIf="!layoutService.isSidebarCollapsed()">Unit Test Generator</span>
+          </a>
+        </li>
+        <li>
+          <a 
+            routerLink="/dashboard" 
+            class="nav-link feature-nav-link"
+            [matTooltip]="layoutService.isSidebarCollapsed() ? 'AI Documentation Engine' : ''"
+            matTooltipPosition="right"
+          >
+            <mat-icon class="nav-icon text-teal">auto_stories</mat-icon>
+            <span class="nav-label" *ngIf="!layoutService.isSidebarCollapsed()">AI Documentation</span>
+          </a>
+        </li>
+        <li>
+          <a 
+            routerLink="/dashboard" 
+            class="nav-link feature-nav-link"
+            [matTooltip]="layoutService.isSidebarCollapsed() ? 'SOLID & Technical Debt' : ''"
+            matTooltipPosition="right"
+          >
+            <mat-icon class="nav-icon text-blue">verified</mat-icon>
+            <span class="nav-label" *ngIf="!layoutService.isSidebarCollapsed()">Quality & Smells</span>
+          </a>
+        </li>
+        <li>
+          <a 
+            routerLink="/dashboard" 
+            class="nav-link feature-nav-link"
+            [matTooltip]="layoutService.isSidebarCollapsed() ? 'Vulnerability Scanner' : ''"
+            matTooltipPosition="right"
+          >
+            <mat-icon class="nav-icon text-amber">security</mat-icon>
+            <span class="nav-label" *ngIf="!layoutService.isSidebarCollapsed()">Security Audits</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
   </nav>
 
   <!-- User Footer -->
   <div class="sidebar-footer">
     <div class="user-profile" *ngIf="authService.user()">
-      <div class="user-avatar">
+      <div class="user-avatar" [matTooltip]="authService.user()?.username || 'User'">
         {{ authService.user()?.username?.substring(0, 1)?.toUpperCase() }}
       </div>
       <div class="user-info" *ngIf="!layoutService.isSidebarCollapsed()">
         <span class="username">{{ authService.user()?.username }}</span>
-        <span class="user-role">Developer</span>
+        <span class="user-role">Developer • Standard</span>
       </div>
       <button 
         mat-icon-button 
         class="logout-btn" 
         (click)="logout()"
-        [matTooltip]="layoutService.isSidebarCollapsed() ? 'Logout' : ''"
+        [matTooltip]="layoutService.isSidebarCollapsed() ? 'Logout' : 'Sign out of CodeDoc AI'"
         matTooltipPosition="right"
       >
         <mat-icon>logout</mat-icon>
@@ -109,3 +262,4 @@
   *ngIf="layoutService.isHandset() && layoutService.isMobileMenuOpen()"
   (click)="layoutService.closeMobileMenu()"
 ></div>
+

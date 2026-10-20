@@ -1,32 +1,41 @@
-<div class="app-layout" [class.authenticated]="authService.user() && !isLandingPage()">
-  
-  @if (authService.user() && !isLandingPage()) {
+<div 
+  class="app-layout" 
+  [class.authenticated]="authService.user() && !isFullBleedPage()"
+  [class.sidebar-collapsed]="layoutService.isSidebarCollapsed()"
+  [class.landing-mode]="isOnLandingPage()"
+  [class.auth-mode]="isAuthPage()"
+>
+  @if (authService.user() && !isFullBleedPage()) {
     <app-sidebar></app-sidebar>
   }
 
   <div class="main-wrapper">
-    @if (authService.user() && !isLandingPage()) {
+    @if (authService.user() && !isFullBleedPage()) {
       <header class="top-bar">
         <div class="top-bar-left">
-          <button mat-icon-button class="mobile-menu-btn" (click)="layoutService.toggleSidebar()">
+          <button mat-icon-button class="mobile-menu-btn" (click)="layoutService.toggleSidebar()" matTooltip="Toggle Menu">
             <mat-icon>menu</mat-icon>
           </button>
           
-          <!-- Contextual Breadcrumbs could go here -->
           <div class="breadcrumbs" *ngIf="!layoutService.isHandset()">
-            <span class="breadcrumb-item">Workspace</span>
+            <span class="breadcrumb-item" routerLink="/dashboard" style="cursor: pointer;">Workspace</span>
             <mat-icon class="breadcrumb-separator">chevron_right</mat-icon>
-            <span class="breadcrumb-item active">{{ title }}</span>
+            <span class="breadcrumb-item active">{{ pageTitle() }}</span>
           </div>
         </div>
 
         <div class="top-bar-right">
-          <button mat-icon-button matTooltip="Notifications">
-            <mat-icon>notifications_none</mat-icon>
+          <div class="status-indicator" matTooltip="AI Service Online & Validated">
+            <span class="status-dot"></span>
+            <span class="status-text">AI Ready</span>
+          </div>
+
+          <button mat-icon-button matTooltip="AI Test Generator" routerLink="/unit-test-generator">
+            <mat-icon>science</mat-icon>
           </button>
-          
-          <button mat-icon-button matTooltip="Search (Ctrl+K)">
-            <mat-icon>search</mat-icon>
+
+          <button mat-icon-button matTooltip="Dashboard" routerLink="/dashboard">
+            <mat-icon>dashboard</mat-icon>
           </button>
         </div>
       </header>
@@ -37,3 +46,4 @@
     </main>
   </div>
 </div>
+

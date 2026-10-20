@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, input, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -54,10 +54,19 @@ export class ProjectViewComponent implements OnInit {
   private router = inject(Router);
 
   id = input.required<string>(); // Route parameter bound via withComponentInputBinding()
+  tab = input<string>(); // Query parameter bound via withComponentInputBinding()
   
+  selectedTabIndex = computed(() => {
+    const t = this.tab();
+    if (t === 'docs') return 1;
+    if (t === 'quality') return 2;
+    return 0;
+  });
+
   project = signal<Project | null>(null);
   files = signal<SourceFile[]>([]);
   docs = signal<GeneratedDoc[]>([]);
+
   qualitySummary = signal<ProjectQualitySummary | null>(null);
   isLoading = signal(false);
   isFilesLoading = signal(false);

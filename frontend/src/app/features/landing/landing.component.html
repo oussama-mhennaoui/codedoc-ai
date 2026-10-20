@@ -1,36 +1,49 @@
-<!-- Navbar -->
+<!-- Top Navigation Bar -->
 <nav class="navbar" [class.scrolled]="isScrolled()">
   <div class="navbar-content">
-    <!-- Left: Logo -->
+    <!-- Left: Brand Logo -->
     <div class="navbar-brand">
-      <mat-icon class="brand-icon">description</mat-icon>
-      <span class="brand-text">CodeDoc AI</span>
+      <div class="brand-logo-icon">
+        <mat-icon>auto_awesome</mat-icon>
+      </div>
+      <div class="brand-text-group">
+        <span class="brand-title">CodeDoc AI</span>
+        <span class="brand-sub">DEVELOPER PLATFORM</span>
+      </div>
     </div>
 
-    <!-- Right: Buttons -->
+    <!-- Center: Section Anchors -->
+    <div class="navbar-nav-links">
+      <button class="nav-anchor" (click)="scrollToSection('capabilities')">Capabilities</button>
+      <button class="nav-anchor" (click)="scrollToSection('preview')">Live Studio</button>
+      <button class="nav-anchor" (click)="scrollToSection('workflow')">Workflow</button>
+      <button class="nav-anchor" (click)="scrollToSection('architecture')">Architecture</button>
+    </div>
+
+    <!-- Right: Authentication Actions -->
     <div class="navbar-actions">
       @if (authService.user()) {
         <button
-          mat-raised-button
+          mat-flat-button
           color="primary"
           (click)="goToDashboard()"
-          class="nav-button">
+          class="nav-button nav-btn-primary">
           <mat-icon>dashboard</mat-icon>
-          Go to Dashboard
+          Go to Workspace
         </button>
       } @else {
         <button
           mat-button
-          class="nav-button nav-button-secondary"
+          class="nav-button nav-btn-text"
           (click)="goToLogin()">
-          Login
+          Sign In
         </button>
         <button
-          mat-raised-button
+          mat-flat-button
           color="primary"
           (click)="goToRegister()"
-          class="nav-button">
-          Get Started
+          class="nav-button nav-btn-primary">
+          Get Started Free
         </button>
       }
     </div>
@@ -38,170 +51,616 @@
 </nav>
 
 <!-- Hero Section -->
-<section class="hero">
-  <div class="hero-content">
-    <h1 class="hero-title">
-      Turn any code into clear documentation — in seconds.
-    </h1>
-    <p class="hero-subtitle">
-      CodeDoc AI reads your source files and generates structured, editable
-      technical documentation powered by AI.
-    </p>
+<section class="hero-section">
+  <div class="hero-glow"></div>
+  <div class="hero-container">
+    
+    <!-- Hero Text Column -->
+    <div class="hero-text-content">
+      <div class="hero-badge">
+        <span class="badge-dot"></span>
+        <span>Spring Boot 3 + Angular 17 • Enterprise AI Engine</span>
+      </div>
 
-    <div class="hero-ctas">
-      <button
-        mat-raised-button
-        color="primary"
-        size="large"
-        (click)="goToRegister()"
-        class="cta-primary">
-        Get Started Free
-      </button>
-      <button
-        mat-stroked-button
-        class="cta-secondary"
-        (click)="scrollToFeatures()">
-        See how it works
-      </button>
+      <h1 class="hero-title">
+        Turn Raw Code into <span class="gradient-text">Living Docs, Tests</span> & Security Audits
+      </h1>
+
+      <p class="hero-subtitle">
+        CodeDoc AI is the intelligent developer workspace that reads your codebase, generates multi-section technical documentation, measures SOLID compliance & technical debt, catches OWASP vulnerabilities, and builds automated unit test suites in seconds.
+      </p>
+
+      <div class="hero-cta-group">
+        @if (authService.user()) {
+          <button
+            mat-flat-button
+            color="primary"
+            (click)="goToDashboard()"
+            class="cta-btn-primary">
+            <mat-icon>dashboard</mat-icon>
+            Open Dashboard
+          </button>
+        } @else {
+          <button
+            mat-flat-button
+            color="primary"
+            (click)="goToRegister()"
+            class="cta-btn-primary">
+            Start Free Now
+            <mat-icon>arrow_forward</mat-icon>
+          </button>
+          <button
+            mat-stroked-button
+            class="cta-btn-secondary"
+            (click)="scrollToSection('capabilities')">
+            Explore All Features
+          </button>
+        }
+      </div>
+
+      <!-- Trust Badges Row -->
+      <div class="hero-feature-tags">
+        <div class="tag-item">
+          <mat-icon>check_circle</mat-icon>
+          <span>Markdown, PDF & HTML Export</span>
+        </div>
+        <div class="tag-item">
+          <mat-icon>check_circle</mat-icon>
+          <span>SOLID & Tech Debt Analysis</span>
+        </div>
+        <div class="tag-item">
+          <mat-icon>check_circle</mat-icon>
+          <span>OWASP & CWE Security Audit</span>
+        </div>
+        <div class="tag-item">
+          <mat-icon>check_circle</mat-icon>
+          <span>JUnit & Mockito Test Generator</span>
+        </div>
+      </div>
     </div>
-  </div>
 
-  <!-- Hero Illustration -->
-  <div class="hero-illustration">
-    <mat-card class="code-demo-card">
-      <div class="demo-columns">
-        <div class="demo-code">
-          <div class="code-label">Source Code</div>
-          <pre><code><span class="keyword">function</span> <span class="function">calculate</span>(a, b) {{ '{' }}
-  <span class="keyword">return</span> a + b;
-{{ '}' }}
-
-<span class="keyword">function</span> <span class="function">process</span>(data) {{ '{' }}
-  <span class="keyword">if</span> (!data) {{ '{' }}
-    <span class="keyword">throw</span> <span class="keyword">new</span> Error();
-  {{ '}' }}
-  <span class="keyword">return</span> format(data);
-{{ '}' }}
-</code></pre>
+    <!-- Hero Interactive Studio Preview (Right Column) -->
+    <div class="hero-preview-wrapper" id="preview">
+      <div class="interactive-preview-card">
+        <!-- Mock Browser / IDE Window Bar -->
+        <div class="preview-window-bar">
+          <div class="window-controls">
+            <span class="dot dot-red"></span>
+            <span class="dot dot-yellow"></span>
+            <span class="dot dot-green"></span>
+          </div>
+          <div class="window-title">
+            <mat-icon class="tab-icon-small">terminal</mat-icon>
+            <span>codedoc-ai / studio-preview</span>
+          </div>
+          <div class="window-status">
+            <span class="live-dot"></span>
+            <span>AI Ready</span>
+          </div>
         </div>
 
-        <div class="demo-divider">→</div>
+        <!-- Interactive Preview Tabs -->
+        <div class="preview-tabs-bar">
+          <button 
+            class="tab-btn" 
+            [class.active]="activePreviewTab() === 'docs'"
+            (click)="setPreviewTab('docs')"
+          >
+            <mat-icon>auto_stories</mat-icon>
+            <span>AI Docs</span>
+          </button>
+          <button 
+            class="tab-btn" 
+            [class.active]="activePreviewTab() === 'quality'"
+            (click)="setPreviewTab('quality')"
+          >
+            <mat-icon>verified</mat-icon>
+            <span>Quality & Debt</span>
+          </button>
+          <button 
+            class="tab-btn" 
+            [class.active]="activePreviewTab() === 'security'"
+            (click)="setPreviewTab('security')"
+          >
+            <mat-icon>security</mat-icon>
+            <span>Security Audit</span>
+          </button>
+          <button 
+            class="tab-btn" 
+            [class.active]="activePreviewTab() === 'tests'"
+            (click)="setPreviewTab('tests')"
+          >
+            <mat-icon>science</mat-icon>
+            <span>Unit Tests</span>
+          </button>
+        </div>
 
-        <div class="demo-docs">
-          <div class="code-label">Generated Docs</div>
-          <div class="doc-content">
-            <h4>calculate(a, b)</h4>
-            <p>Performs addition of two numbers.</p>
-            <p><strong>Params:</strong> a, b (number)</p>
-            <p><strong>Returns:</strong> number</p>
+        <!-- Tab 1: AI Documentation -->
+        <div class="preview-body" *ngIf="activePreviewTab() === 'docs'">
+          <div class="preview-split-grid">
+            <div class="pane-code">
+              <div class="pane-header">
+                <span>PaymentService.java</span>
+                <span class="code-lang-tag">Java 17</span>
+              </div>
+              <pre><code><span class="kw">public</span> <span class="tp">PaymentResult</span> <span class="fn">processPayment</span>(
+    <span class="tp">Order</span> order, <span class="tp">PaymentMethod</span> method
+) <span class="kw">throws</span> <span class="tp">PaymentException</span> &#123;
+  <span class="kw">if</span> (order.getTotal() &lt;= <span class="num">0</span>) &#123;
+    <span class="kw">throw new</span> <span class="tp">InvalidOrderException</span>();
+  &#125;
+  <span class="kw">return</span> gateway.charge(order, method);
+&#125;</code></pre>
+            </div>
 
-            <h4 style="margin-top: 16px;">process(data)</h4>
-            <p>Processes input data with validation.</p>
-            <p><strong>Throws:</strong> Error if data is null</p>
+            <div class="pane-arrow">
+              <mat-icon>arrow_forward</mat-icon>
+            </div>
+
+            <div class="pane-result">
+              <div class="pane-header">
+                <span class="tag-ai">AI GENERATED DOC</span>
+                <div class="export-pill-group">
+                  <span class="pill-export">PDF</span>
+                  <span class="pill-export">MD</span>
+                  <span class="pill-export">HTML</span>
+                </div>
+              </div>
+              <div class="doc-preview-content">
+                <div class="doc-method-name">processPayment(order, method)</div>
+                <p class="doc-desc">Authorizes and processes transactional order charges via the integrated payment gateway provider.</p>
+                <div class="doc-specs">
+                  <div class="spec-row"><strong>&#64;param order:</strong> Order details & total amount</div>
+                  <div class="spec-row"><strong>&#64;param method:</strong> Payment method configuration</div>
+                  <div class="spec-row"><strong>&#64;throws:</strong> InvalidOrderException if amount &lt;= 0</div>
+                  <div class="spec-row"><strong>&#64;returns:</strong> PaymentResult with gateway confirmation ID</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 2: Quality & Technical Debt -->
+        <div class="preview-body" *ngIf="activePreviewTab() === 'quality'">
+          <div class="quality-preview-grid">
+            <div class="quality-score-box good">
+              <div class="score-radial">94</div>
+              <div class="score-meta">
+                <span class="score-label">Global Quality Score</span>
+                <span class="score-grade">GRADE A • Clean Architecture</span>
+              </div>
+            </div>
+
+            <div class="debt-metrics-row">
+              <div class="metric-mini-card">
+                <span class="num-bold">15 min</span>
+                <span class="label-sub">Technical Debt</span>
+              </div>
+              <div class="metric-mini-card">
+                <span class="num-bold">0 Critical</span>
+                <span class="label-sub">Code Smells</span>
+              </div>
+              <div class="metric-mini-card">
+                <span class="num-bold">100%</span>
+                <span class="label-sub">SOLID Compliance</span>
+              </div>
+            </div>
+
+            <div class="solid-audit-bars">
+              <div class="solid-item">
+                <span class="solid-name">Single Responsibility Principle (SRP)</span>
+                <span class="solid-status pass">PASSED (100%)</span>
+              </div>
+              <div class="solid-item">
+                <span class="solid-name">Dependency Inversion Principle (DIP)</span>
+                <span class="solid-status pass">PASSED (95%)</span>
+              </div>
+              <div class="solid-item">
+                <span class="solid-name">Open/Closed Principle (OCP)</span>
+                <span class="solid-status pass">PASSED (90%)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 3: Security Vulnerability Audit -->
+        <div class="preview-body" *ngIf="activePreviewTab() === 'security'">
+          <div class="security-preview-box">
+            <div class="vuln-alert-card">
+              <div class="vuln-badge critical">CRITICAL VULNERABILITY DETECTED</div>
+              <h4 class="vuln-name">CWE-89: SQL Injection Risk in UserQueryBuilder</h4>
+              <p class="vuln-desc">Raw parameter concatenation detected in repository query. An attacker could bypass authentication filters.</p>
+              
+              <div class="remediation-snippet">
+                <div class="code-before">- String q = "SELECT * FROM users WHERE email = '" + input + "'";</div>
+                <div class="code-after">+ String q = "SELECT * FROM users WHERE email = :email"; // Param binding</div>
+              </div>
+
+              <div class="vuln-meta-footer">
+                <span class="cvss-tag">CVSS: 9.1 High</span>
+                <span class="owasp-tag">OWASP Top 10: A03:2021-Injection</span>
+                <span class="fixed-tag">AI Patch Generated</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 4: Unit Test Generator -->
+        <div class="preview-body" *ngIf="activePreviewTab() === 'tests'">
+          <div class="test-preview-box">
+            <div class="pane-header">
+              <span>PaymentServiceTest.java (Generated with JUnit 5 + Mockito)</span>
+              <span class="test-coverage-tag">100% Path Coverage</span>
+            </div>
+            <pre><code><span class="anno">&#64;ExtendWith</span>(MockitoExtension.class)
+<span class="kw">class</span> <span class="tp">PaymentServiceTest</span> &#123;
+  <span class="anno">&#64;Mock</span> <span class="kw">private</span> <span class="tp">PaymentGateway</span> gateway;
+  <span class="anno">&#64;InjectMocks</span> <span class="kw">private</span> <span class="tp">PaymentService</span> service;
+
+  <span class="anno">&#64;Test</span>
+  <span class="kw">void</span> <span class="fn">shouldThrowWhenOrderTotalIsNegative</span>() &#123;
+    <span class="tp">Order</span> mockOrder = <span class="kw">new</span> Order(-<span class="num">10.0</span>);
+    assertThrows(<span class="tp">InvalidOrderException</span>.class, () -&gt; 
+      service.processPayment(mockOrder, <span class="kw">new</span> CardMethod())
+    );
+  &#125;
+&#125;</code></pre>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- Stats / Highlights Ribbon -->
+<section class="stats-ribbon">
+  <div class="stats-grid">
+    <div class="stat-item">
+      <span class="stat-number">10x</span>
+      <span class="stat-label">Faster Documentation</span>
+      <span class="stat-desc">Zero manual boilerplate writing</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-number">0 - 100</span>
+      <span class="stat-label">Quality & Debt Score</span>
+      <span class="stat-desc">Full SOLID rules & technical debt grade</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-number">OWASP</span>
+      <span class="stat-label">Vulnerability Scanner</span>
+      <span class="stat-desc">CWE classification & AI remediation diffs</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-number">1-Click</span>
+      <span class="stat-label">Unit Test Generation</span>
+      <span class="stat-desc">Complete test classes with Mockito & JUnit</span>
+    </div>
+  </div>
+</section>
+
+<!-- Full Capabilities Grid Section -->
+<section class="capabilities-section" id="capabilities">
+  <div class="section-header-centered">
+    <span class="section-pill">COMPLETE FEATURE SET</span>
+    <h2 class="section-title">Everything Developers Need for World-Class Codebases</h2>
+    <p class="section-subtitle">
+      CodeDoc AI goes beyond static doc generators. It is a full-featured code intelligence suite combining documentation, quality audits, vulnerability detection, unit testing, and contextual AI chat.
+    </p>
+  </div>
+
+  <div class="capabilities-grid">
+    
+    <!-- Feature 1: AI Technical Documentation -->
+    <mat-card class="capability-card featured-glow">
+      <div class="cap-header">
+        <div class="cap-icon-box indigo">
+          <mat-icon>auto_stories</mat-icon>
+        </div>
+        <span class="cap-badge">CORE ENGINE</span>
+      </div>
+      <h3 class="cap-title">AI Documentation Engine & Studio</h3>
+      <p class="cap-desc">
+        Parses source code into structured sections (Overview, Classes, Methods, Dependencies, REST Endpoints). Interactive studio lets you reorder sections via drag-and-drop, edit in Markdown, and collaborate with threaded comments.
+      </p>
+      <div class="cap-features-list">
+        <div class="bullet-point"><mat-icon>check</mat-icon> Multi-format export: PDF, Markdown, and clean HTML</div>
+        <div class="bullet-point"><mat-icon>check</mat-icon> CDK Drag & Drop section reorganizing</div>
+        <div class="bullet-point"><mat-icon>check</mat-icon> In-line discussion threads & comments on sections</div>
+      </div>
+    </mat-card>
+
+    <!-- Feature 2: Quality & Technical Debt -->
+    <mat-card class="capability-card">
+      <div class="cap-header">
+        <div class="cap-icon-box teal">
+          <mat-icon>verified</mat-icon>
+        </div>
+        <span class="cap-badge">MODULE 1</span>
+      </div>
+      <h3 class="cap-title">Code Smells, SOLID & Technical Debt</h3>
+      <p class="cap-desc">
+        Automatically assesses your software against the 5 SOLID architectural principles. Categorizes code smells by severity (Critical, Major, Minor) and calculates remediation debt in hours and minutes with Letter Grades (A to E).
+      </p>
+      <div class="cap-features-list">
+        <div class="bullet-point"><mat-icon>check</mat-icon> Global Quality Score from 0 to 100</div>
+        <div class="bullet-point"><mat-icon>check</mat-icon> Aggregated project-level technical debt dashboard</div>
+        <div class="bullet-point"><mat-icon>check</mat-icon> Exportable Quality Analysis reports in PDF or MD</div>
+      </div>
+    </mat-card>
+
+    <!-- Feature 3: Security & Vulnerability Audit -->
+    <mat-card class="capability-card">
+      <div class="cap-header">
+        <div class="cap-icon-box amber">
+          <mat-icon>security</mat-icon>
+        </div>
+        <span class="cap-badge">MODULE 2</span>
+      </div>
+      <h3 class="cap-title">Deep Security & Vulnerability Audit</h3>
+      <p class="cap-desc">
+        Identifies security risks before malicious actors do. Scans for OWASP Top 10 vulnerabilities, SQL injection, XSS, insecure deserialization, hardcoded secrets, and dependency CVE exposures with CVSS risk scoring.
+      </p>
+      <div class="cap-features-list">
+        <div class="bullet-point"><mat-icon>check</mat-icon> Universal CWE weakness mapping & severity tags</div>
+        <div class="bullet-point"><mat-icon>check</mat-icon> Automated code patch diffs and remediation plans</div>
+        <div class="bullet-point"><mat-icon>check</mat-icon> Integrated vulnerability glossary & explanation guide</div>
+      </div>
+    </mat-card>
+
+    <!-- Feature 4: Automated Unit Test Generator -->
+    <mat-card class="capability-card">
+      <div class="cap-header">
+        <div class="cap-icon-box purple">
+          <mat-icon>science</mat-icon>
+        </div>
+        <span class="cap-badge">AUTOMATION</span>
+      </div>
+      <h3 class="cap-title">Automated Unit Test Generator</h3>
+      <p class="cap-desc">
+        Eliminates the tedious chore of writing unit test boilerplate. Instantly generates complete test classes covering happy paths, edge cases, null boundaries, and exception assertions tailored to your frameworks.
+      </p>
+      <div class="cap-features-list">
+        <div class="bullet-point"><mat-icon>check</mat-icon> Java (JUnit 5 + Mockito) & TypeScript/Jest support</div>
+        <div class="bullet-point"><mat-icon>check</mat-icon> Mock injection, stubs, and assertion verify calls</div>
+        <div class="bullet-point"><mat-icon>check</mat-icon> Copy or download test classes ready to merge into git</div>
+      </div>
+    </mat-card>
+
+    <!-- Feature 5: Contextual AI Assistant / Chatbot -->
+    <mat-card class="capability-card">
+      <div class="cap-header">
+        <div class="cap-icon-box blue">
+          <mat-icon>smart_toy</mat-icon>
+        </div>
+        <span class="cap-badge">COPILOT</span>
+      </div>
+      <h3 class="cap-title">Contextual AI Codebase Assistant</h3>
+      <p class="cap-desc">
+        Integrated RAG AI chatbot that understands your project files. Ask questions about business logic, request refactoring suggestions, or generate sequence diagrams and architecture walk-throughs in real time.
+      </p>
+      <div class="cap-features-list">
+        <div class="bullet-point"><mat-icon>check</mat-icon> Project-aware conversational history & suggestions</div>
+        <div class="bullet-point"><mat-icon>check</mat-icon> "Explain this file / function" one-click action</div>
+        <div class="bullet-point"><mat-icon>check</mat-icon> Source citations directly linked to code lines</div>
+      </div>
+    </mat-card>
+
+    <!-- Feature 6: Complexity & Maintainability -->
+    <mat-card class="capability-card">
+      <div class="cap-header">
+        <div class="cap-icon-box emerald">
+          <mat-icon>speed</mat-icon>
+        </div>
+        <span class="cap-badge">METRICS</span>
+      </div>
+      <h3 class="cap-title">Complexity & Maintainability Insights</h3>
+      <p class="cap-desc">
+        Detect high cognitive complexity before it turns into technical debt. CodeDoc AI analyzes cyclomatic complexity, branch nesting depth, and code maintainability indicators across all uploaded source files.
+      </p>
+      <div class="cap-features-list">
+        <div class="bullet-point"><mat-icon>check</mat-icon> Real-time cyclomatic & cognitive complexity alerts</div>
+        <div class="bullet-point"><mat-icon>check</mat-icon> File checksum verification & integrity tracking</div>
+        <div class="bullet-point"><mat-icon>check</mat-icon> Single-source document constraint to prevent drift</div>
+      </div>
+    </mat-card>
+
+  </div>
+</section>
+
+<!-- End-to-End Workflow Section -->
+<section class="workflow-section" id="workflow">
+  <div class="section-header-centered">
+    <span class="section-pill">HOW IT WORKS</span>
+    <h2 class="section-title">Four Steps from Raw Code to Production Clarity</h2>
+    <p class="section-subtitle">
+      A streamlined pipeline engineered for software teams, tech leads, and open-source maintainers.
+    </p>
+  </div>
+
+  <div class="workflow-steps-container">
+    <div class="workflow-step-card">
+      <div class="step-num-pill">01</div>
+      <div class="step-icon-circle">
+        <mat-icon>cloud_upload</mat-icon>
+      </div>
+      <h4>Upload Source Files</h4>
+      <p>Add source code files (.java, .ts, .js, .py, etc.) to your dedicated project workspace.</p>
+    </div>
+
+    <div class="workflow-connector">
+      <mat-icon>arrow_forward</mat-icon>
+    </div>
+
+    <div class="workflow-step-card">
+      <div class="step-num-pill">02</div>
+      <div class="step-icon-circle">
+        <mat-icon>psychology</mat-icon>
+      </div>
+      <h4>Multi-Engine AI Scan</h4>
+      <p>Code is anonymized and processed through specialized LLMs with strict JSON schema validation.</p>
+    </div>
+
+    <div class="workflow-connector">
+      <mat-icon>arrow_forward</mat-icon>
+    </div>
+
+    <div class="workflow-step-card">
+      <div class="step-num-pill">03</div>
+      <div class="step-icon-circle">
+        <mat-icon>edit_note</mat-icon>
+      </div>
+      <h4>Review & Refine</h4>
+      <p>Inspect quality scores, reorder doc sections, view security patches, or chat with the AI assistant.</p>
+    </div>
+
+    <div class="workflow-connector">
+      <mat-icon>arrow_forward</mat-icon>
+    </div>
+
+    <div class="workflow-step-card">
+      <div class="step-num-pill">04</div>
+      <div class="step-icon-circle">
+        <mat-icon>file_download</mat-icon>
+      </div>
+      <h4>Export & Deliver</h4>
+      <p>Export documentation in PDF, Markdown, or HTML, and export unit test suites directly into your repo.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Architecture & Tech Stack Section -->
+<section class="architecture-section" id="architecture">
+  <div class="architecture-container">
+    <div class="arch-text">
+      <span class="section-pill">ENTERPRISE ARCHITECTURE</span>
+      <h2 class="section-title">Robust Backend. Modern Frontend. Privacy-First AI.</h2>
+      <p class="arch-desc">
+        CodeDoc AI is engineered with production-ready standards. Sensitive developer data such as emails and phone numbers are automatically sanitized before invoking AI endpoints, and all LLM outputs pass NetworkNT JSON schema validation.
+      </p>
+
+      <div class="tech-stack-pills">
+        <span class="tech-pill">Spring Boot 3.2 (Java 17)</span>
+        <span class="tech-pill">Angular 17 Standalone</span>
+        <span class="tech-pill">PostgreSQL 15</span>
+        <span class="tech-pill">Spring Security 6 (JWT)</span>
+        <span class="tech-pill">Flyway Migrations</span>
+        <span class="tech-pill">NetworkNT Schema Validator</span>
+        <span class="tech-pill">OpenPDF 1.3.39</span>
+        <span class="tech-pill">ngx-highlightjs</span>
+        <span class="tech-pill">CDK Drag & Drop</span>
+      </div>
+    </div>
+
+    <div class="arch-diagram-card">
+      <div class="arch-diagram-header">
+        <mat-icon>schema</mat-icon>
+        <span>System Architecture & Data Flow</span>
+      </div>
+      <div class="arch-diagram-body">
+        <div class="diagram-layer frontend">
+          <span class="layer-badge">Frontend</span>
+          <strong>Angular 17 UI</strong>
+          <span class="layer-detail">Signals • CDK Drag/Drop • Material 3</span>
+        </div>
+        <div class="diagram-arrow-down">↕ REST / JWT Authentication</div>
+        <div class="diagram-layer backend">
+          <span class="layer-badge">Backend</span>
+          <strong>Spring Boot 3.2 Core</strong>
+          <span class="layer-detail">JPA • Flyway • Security 6 • Privacy Anonymizer</span>
+        </div>
+        <div class="diagram-split-arrows">
+          <div class="split-col">
+            <span class="split-arrow">↓ JDBC</span>
+            <div class="diagram-layer db">
+              <span class="layer-badge">Database</span>
+              <strong>PostgreSQL 15</strong>
+              <span class="layer-detail">Source Files • Quality Reports • Docs</span>
+            </div>
+          </div>
+          <div class="split-col">
+            <span class="split-arrow">↓ JSON Schema REST</span>
+            <div class="diagram-layer ai">
+              <span class="layer-badge">Intelligence</span>
+              <strong>OpenAI / Compatible LLM</strong>
+              <span class="layer-detail">Validated with NetworkNT Schema</span>
+            </div>
           </div>
         </div>
       </div>
-    </mat-card>
+    </div>
   </div>
 </section>
 
-<!-- Features Section -->
-<section class="features-section" id="features">
-  <h2 class="section-title">Key Features</h2>
-
-  <div class="features-grid">
-    <!-- Feature 1: Instant Documentation -->
-    <mat-card class="feature-card">
-      <div class="feature-icon">
-        <mat-icon>lightning_on</mat-icon>
-      </div>
-      <h3 class="feature-title">Instant Documentation</h3>
-      <p class="feature-description">
-        Upload a file, and CodeDoc AI instantly generates structured,
-        professional documentation with descriptions, parameters, and examples.
-      </p>
-    </mat-card>
-
-    <!-- Feature 2: Project Summaries -->
-    <mat-card class="feature-card">
-      <div class="feature-icon">
-        <mat-icon>summarize</mat-icon>
-      </div>
-      <h3 class="feature-title">Project Summaries</h3>
-      <p class="feature-description">
-        Get one-click overviews of entire codebases. Understand architecture,
-        dependencies, and key modules without diving into code.
-      </p>
-    </mat-card>
-
-    <!-- Feature 3: Security Audit -->
-    <mat-card class="feature-card">
-      <div class="feature-icon">
-        <mat-icon>security</mat-icon>
-      </div>
-      <h3 class="feature-title">Security Audit</h3>
-      <p class="feature-description">
-        Detect vulnerabilities and security flaws in your code using AI. Get detailed reports and recommendations to secure your codebase.
-      </p>
-    </mat-card>
-  </div>
-</section>
-
-<!-- How It Works Section -->
-<section class="how-it-works-section">
-  <h2 class="section-title">How It Works</h2>
-
-  <div class="steps-container">
-    <!-- Step 1 -->
-    <div class="step">
-      <div class="step-number">1</div>
-      <h3 class="step-title">Create a Project</h3>
-      <p class="step-description">Set up a new project in CodeDoc AI.</p>
-    </div>
-
-    <div class="step-divider">
-      <mat-icon>arrow_forward</mat-icon>
-    </div>
-
-    <!-- Step 2 -->
-    <div class="step">
-      <div class="step-number">2</div>
-      <h3 class="step-title">Upload Your Files</h3>
-      <p class="step-description">Add source code files to your project.</p>
-    </div>
-
-    <div class="step-divider">
-      <mat-icon>arrow_forward</mat-icon>
-    </div>
-
-    <!-- Step 3 -->
-    <div class="step">
-      <div class="step-number">3</div>
-      <h3 class="step-title">Generate & Edit</h3>
-      <p class="step-description">
-        AI generates docs. Customize, reorganize, and export.
-      </p>
+<!-- Bottom CTA Banner -->
+<section class="cta-banner-section">
+  <div class="cta-banner-content">
+    <h2 class="cta-banner-title">Elevate Your Code Quality & Documentation Today</h2>
+    <p class="cta-banner-sub">
+      Join developers building cleaner, better documented, and more secure software with CodeDoc AI.
+    </p>
+    <div class="cta-banner-buttons">
+      @if (authService.user()) {
+        <button mat-flat-button color="primary" class="banner-btn-primary" (click)="goToDashboard()">
+          <mat-icon>dashboard</mat-icon>
+          Launch Workspace
+        </button>
+      } @else {
+        <button mat-flat-button color="primary" class="banner-btn-primary" (click)="goToRegister()">
+          Create Free Account
+          <mat-icon>arrow_forward</mat-icon>
+        </button>
+        <button mat-stroked-button class="banner-btn-secondary" (click)="goToLogin()">
+          Sign In
+        </button>
+      }
     </div>
   </div>
 </section>
 
 <!-- Footer -->
 <footer class="footer">
-  <div class="footer-content">
-    <div class="footer-left">
-      <p class="footer-text">CodeDoc AI © 2026</p>
+  <div class="footer-container">
+    <div class="footer-col brand-col">
+      <div class="footer-brand">
+        <mat-icon class="footer-brand-icon">auto_awesome</mat-icon>
+        <span class="footer-brand-name">CodeDoc AI</span>
+      </div>
+      <p class="footer-brand-desc">
+        AI-Powered technical documentation, code smell detection, SOLID compliance analysis, vulnerability audits, and unit test generation.
+      </p>
+      <span class="footer-copy">© 2026 CodeDoc AI. All rights reserved.</span>
     </div>
 
-    <div class="footer-center">
-      <a href="#" class="footer-link">GitHub</a>
-      <span class="footer-divider">•</span>
-      <a href="#" class="footer-link">Documentation</a>
-      <span class="footer-divider">•</span>
-      <a href="#" class="footer-link">Contact</a>
+    <div class="footer-col">
+      <h5 class="footer-heading">Capabilities</h5>
+      <ul class="footer-links">
+        <li><a (click)="scrollToSection('capabilities')">Documentation Engine</a></li>
+        <li><a (click)="scrollToSection('capabilities')">SOLID & Technical Debt</a></li>
+        <li><a (click)="scrollToSection('capabilities')">Security & Vulnerability Audit</a></li>
+        <li><a (click)="scrollToSection('capabilities')">Unit Test Generator</a></li>
+        <li><a (click)="scrollToSection('capabilities')">AI Codebase Copilot</a></li>
+      </ul>
     </div>
 
-    <div class="footer-right">
-      <p class="footer-text">Built with Spring Boot + Angular + AI</p>
+    <div class="footer-col">
+      <h5 class="footer-heading">Navigation</h5>
+      <ul class="footer-links">
+        <li><a (click)="goToLogin()">Sign In</a></li>
+        <li><a (click)="goToRegister()">Create Account</a></li>
+        <li><a (click)="scrollToSection('workflow')">How It Works</a></li>
+        <li><a (click)="scrollToSection('architecture')">Architecture & Security</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h5 class="footer-heading">Stack</h5>
+      <p class="stack-tag">Spring Boot 3.2 • Java 17</p>
+      <p class="stack-tag">Angular 17 • Material 3</p>
+      <p class="stack-tag">PostgreSQL 15 • Flyway</p>
+      <p class="stack-tag">OpenAI / Compatible Models</p>
     </div>
   </div>
 </footer>
+

@@ -1,50 +1,54 @@
 <div class="project-view-container">
   @if (isLoading()) {
-    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    <mat-progress-bar mode="indeterminate" class="loader"></mat-progress-bar>
   }
 
   @if (project(); as p) {
-    <div class="header">
+    <header class="header">
       <div class="title-section">
-        <button mat-icon-button routerLink="/dashboard" matTooltip="Back to Dashboard">
+        <button mat-icon-button routerLink="/dashboard" matTooltip="Back to Dashboard" class="back-btn">
           <mat-icon>arrow_back</mat-icon>
         </button>
         <div>
           <h1>{{ p.name }}</h1>
           <div class="metadata">
             <span class="badge">{{ p.language }}</span>
-            <span class="timestamp">Last updated: {{ p.updatedAt | date:'medium' }}</span>
+            <span class="timestamp">Last updated: {{ p.updatedAt | date:'mediumDate' }}</span>
           </div>
         </div>
       </div>
       <div class="actions">
-        <button mat-stroked-button color="primary" (click)="openEditDialog()">
-          <mat-icon>edit</mat-icon>
-          Edit
+        <button mat-flat-button color="primary" (click)="openUploadDialog()">
+          <mat-icon>add</mat-icon>
+          Upload File
         </button>
+        <button mat-stroked-button (click)="openEditDialog()">
+          <mat-icon>settings</mat-icon>
+          Settings
+        </button>
+      </div>
+    </header>
+
+    <div class="description-card" *ngIf="p.description">
+      <div class="card-content" style="padding: var(--space-6);">
+        <p>{{ p.description }}</p>
       </div>
     </div>
 
-    <mat-card class="description-card">
-      <mat-card-content>
-        <p>{{ p.description || 'No description provided.' }}</p>
-      </mat-card-content>
-    </mat-card>
-
-    <mat-tab-group class="content-tabs">
+    <mat-tab-group class="content-tabs" mat-stretch-tabs="false" animationDuration="0ms">
+      <!-- Files Tab -->
       <mat-tab>
         <ng-template mat-tab-label>
-          <mat-icon class="tab-icon">description</mat-icon>
-          <span>Files</span>
+          <mat-icon class="tab-icon">folder</mat-icon>
+          <span>Source Files</span>
         </ng-template>
 
-        <div class="files-tab-content">
-          <div class="table-actions">
-            <h2>Source Files ({{ files().length }})</h2>
-            <button mat-flat-button color="primary" (click)="openUploadDialog()">
-              <mat-icon>add</mat-icon>
-              Upload File
-            </button>
+        <div class="tab-pane">
+          <div class="tab-section-header">
+            <div>
+              <h2>Files</h2>
+              <p class="section-subtitle">{{ files().length }} files in this project</p>
+            </div>
           </div>
 
           @if (isFilesLoading()) {
@@ -52,14 +56,13 @@
           }
 
           <div class="table-container">
-            <table mat-table [dataSource]="files()" class="full-width-table">
-              
+            <table mat-table [dataSource]="files()">
               <ng-container matColumnDef="filename">
                 <th mat-header-cell *matHeaderCellDef>Filename</th>
                 <td mat-cell *matCellDef="let file">
                   <div class="filename-cell">
                     <mat-icon>insert_drive_file</mat-icon>
-                    <span>{{ file.filename }}</span>
+                    <span class="file-link">{{ file.filename }}</span>
                   </div>
                 </td>
               </ng-container>
@@ -77,14 +80,14 @@
               </ng-container>
 
               <ng-container matColumnDef="uploadedAt">
-                <th mat-header-cell *matHeaderCellDef>Uploaded At</th>
-                <td mat-cell *matCellDef="let file">{{ file.uploadedAt | date:'medium' }}</td>
+                <th mat-header-cell *matHeaderCellDef>Uploaded</th>
+                <td mat-cell *matCellDef="let file">{{ file.uploadedAt | date:'mediumDate' }}</td>
               </ng-container>
 
               <ng-container matColumnDef="actions">
-                <th mat-header-cell *matHeaderCellDef class="actions-header"></th>
-                <td mat-cell *matCellDef="let file" class="actions-cell">
-                  <button mat-icon-button color="warn" (click)="deleteFile($event, file.id)" matTooltip="Delete File">
+                <th mat-header-cell *matHeaderCellDef></th>
+                <td mat-cell *matCellDef="let file" style="text-align: right;">
+                  <button mat-icon-button color="warn" (click)="$event.stopPropagation(); deleteFile($event, file.id)" matTooltip="Delete File">
                     <mat-icon>delete_outline</mat-icon>
                   </button>
                 </td>
@@ -97,24 +100,30 @@
             @if (files().length === 0 && !isFilesLoading()) {
               <div class="empty-state">
                 <mat-icon>cloud_upload</mat-icon>
-                <p>No files uploaded yet.</p>
-                <button mat-stroked-button color="primary" (click)="openUploadDialog()">
-                  Upload your first file
+                <h3>No files uploaded</h3>
+                <p>Upload your source code files to start documenting them.</p>
+                <button mat-flat-button color="primary" (click)="openUploadDialog()">
+                  Upload File
                 </button>
               </div>
             }
           </div>
         </div>
       </mat-tab>
+
+      <!-- Documentation Tab -->
       <mat-tab>
         <ng-template mat-tab-label>
           <mat-icon class="tab-icon">auto_stories</mat-icon>
-          <span>Documentation ({{ docs().length }})</span>
+          <span>Documentation</span>
         </ng-template>
 
-        <div class="files-tab-content">
-          <div class="table-actions">
-            <h2>Generated Docs ({{ docs().length }})</h2>
+        <div class="tab-pane">
+          <div class="tab-section-header">
+            <div>
+              <h2>AI Documentation</h2>
+              <p class="section-subtitle">{{ docs().length }} documents generated</p>
+            </div>
           </div>
 
           @if (isDocsLoading()) {
@@ -122,14 +131,13 @@
           }
 
           <div class="table-container">
-            <table mat-table [dataSource]="docs()" class="full-width-table">
-
+            <table mat-table [dataSource]="docs()">
               <ng-container matColumnDef="filename">
                 <th mat-header-cell *matHeaderCellDef>Source File</th>
                 <td mat-cell *matCellDef="let doc">
                   <div class="filename-cell">
                     <mat-icon>description</mat-icon>
-                    <span>{{ doc.sourceFileName }}</span>
+                    <span class="file-link">{{ doc.sourceFileName }}</span>
                   </div>
                 </td>
               </ng-container>
@@ -137,7 +145,7 @@
               <ng-container matColumnDef="status">
                 <th mat-header-cell *matHeaderCellDef>Status</th>
                 <td mat-cell *matCellDef="let doc">
-                  <span class="language-tag" [class.status-success]="doc.status === 'SUCCESS'" [class.status-failed]="doc.status === 'FAILED'">
+                  <span class="status-badge" [class.status-success]="doc.status === 'SUCCESS'" [class.status-failed]="doc.status === 'FAILED'">
                     {{ doc.status }}
                   </span>
                 </td>
@@ -149,17 +157,17 @@
               </ng-container>
 
               <ng-container matColumnDef="createdAt">
-                <th mat-header-cell *matHeaderCellDef>Generated At</th>
-                <td mat-cell *matCellDef="let doc">{{ doc.createdAt | date:'medium' }}</td>
+                <th mat-header-cell *matHeaderCellDef>Generated</th>
+                <td mat-cell *matCellDef="let doc">{{ doc.createdAt | date:'mediumDate' }}</td>
               </ng-container>
 
               <ng-container matColumnDef="actions">
-                <th mat-header-cell *matHeaderCellDef class="actions-header"></th>
-                <td mat-cell *matCellDef="let doc" class="actions-cell">
-                  <button mat-icon-button color="primary" (click)="viewDoc(doc.id)" matTooltip="Open Doc Editor">
-                    <mat-icon>open_in_new</mat-icon>
+                <th mat-header-cell *matHeaderCellDef></th>
+                <td mat-cell *matCellDef="let doc" style="text-align: right;">
+                  <button mat-icon-button color="primary" (click)="$event.stopPropagation(); viewDoc(doc.id)" matTooltip="Open Editor">
+                    <mat-icon>edit_note</mat-icon>
                   </button>
-                  <button mat-icon-button color="warn" (click)="deleteDoc($event, doc.id)" matTooltip="Delete Doc">
+                  <button mat-icon-button color="warn" (click)="$event.stopPropagation(); deleteDoc($event, doc.id)" matTooltip="Delete Doc">
                     <mat-icon>delete_outline</mat-icon>
                   </button>
                 </td>
@@ -172,35 +180,35 @@
             @if (docs().length === 0 && !isDocsLoading()) {
               <div class="empty-state">
                 <mat-icon>auto_stories</mat-icon>
-                <p>No documentation generated yet.</p>
-                <p>Open a file and click <strong>Generate Docs</strong> to get started.</p>
+                <h3>No documentation yet</h3>
+                <p>Select a file from the Files tab to generate its documentation.</p>
               </div>
             }
           </div>
         </div>
       </mat-tab>
 
-      <!-- Tab 3: Qualité & Dette Technique -->
+      <!-- Quality Tab -->
       <mat-tab>
         <ng-template mat-tab-label>
           <mat-icon class="tab-icon">verified</mat-icon>
-          <span>Qualité & Dette</span>
+          <span>Quality & Debt</span>
           @if (qualitySummary(); as qs) {
             <span class="tab-badge" [class.good]="qs.averageScore >= 80" [class.medium]="qs.averageScore >= 50 && qs.averageScore < 80" [class.poor]="qs.averageScore < 50">
-              {{ qs.averageScore }}/100
+              {{ qs.averageScore }}
             </span>
           }
         </ng-template>
 
-        <div class="files-tab-content">
-          <div class="table-actions">
+        <div class="tab-pane">
+          <div class="tab-section-header">
             <div>
-              <h2>Qualité Globale & Dette Technique du Projet</h2>
-              <p class="section-subtitle">Visualisation de la dette technique et des code smells par fichier</p>
+              <h2>Technical Debt & Quality</h2>
+              <p class="section-subtitle">Overview of code quality and maintenance debt</p>
             </div>
-            <button mat-stroked-button color="primary" (click)="loadQualitySummary()" [disabled]="isQualityLoading()">
+            <button mat-stroked-button (click)="loadQualitySummary()" [disabled]="isQualityLoading()">
               <mat-icon>refresh</mat-icon>
-              Actualiser
+              Refresh
             </button>
           </div>
 
@@ -209,10 +217,9 @@
           }
 
           @if (qualitySummary(); as summary) {
-            <!-- Global summary cards -->
             <div class="quality-summary-cards">
               <div class="summary-metric-card" [class.good]="summary.averageScore >= 80" [class.medium]="summary.averageScore >= 50 && summary.averageScore < 80" [class.poor]="summary.averageScore < 50">
-                <span class="metric-title">Score Moyen Qualité</span>
+                <span class="metric-title">Quality Score</span>
                 <div class="metric-val">
                   <span class="large-num">{{ summary.averageScore }}</span>
                   <span class="denom">/ 100</span>
@@ -220,7 +227,7 @@
               </div>
 
               <div class="summary-metric-card">
-                <span class="metric-title">Dette Technique Totale</span>
+                <span class="metric-title">Technical Debt</span>
                 <div class="metric-val">
                   <span class="large-num">{{ summary.totalTechnicalDebtMinutes }}</span>
                   <span class="denom">min</span>
@@ -228,54 +235,53 @@
               </div>
 
               <div class="summary-metric-card">
-                <span class="metric-title">Code Smells Détectés</span>
+                <span class="metric-title">Code Smells</span>
                 <div class="metric-val">
                   <span class="large-num">{{ summary.totalCodeSmells }}</span>
-                  <span class="denom">smells</span>
+                  <span class="denom">total</span>
                 </div>
               </div>
 
               <div class="summary-metric-card" [class.has-crit]="summary.totalCriticalSmells > 0">
-                <span class="metric-title">Problèmes Critiques</span>
+                <span class="metric-title">Critical Issues</span>
                 <div class="metric-val">
                   <span class="large-num">{{ summary.totalCriticalSmells }}</span>
-                  <span class="denom">critiques</span>
+                  <span class="denom">issues</span>
                 </div>
               </div>
             </div>
 
-            <!-- Table of files quality -->
             <div class="table-container">
-              <table mat-table [dataSource]="summary.fileSummaries" class="full-width-table">
+              <table mat-table [dataSource]="summary.fileSummaries">
                 <ng-container matColumnDef="filename">
-                  <th mat-header-cell *matHeaderCellDef>Fichier Source</th>
+                  <th mat-header-cell *matHeaderCellDef>File</th>
                   <td mat-cell *matCellDef="let f">
                     <div class="filename-cell">
                       <mat-icon>code</mat-icon>
-                      <span class="file-link" (click)="viewFile(f.fileId)">{{ f.filename }}</span>
+                      <span class="file-link">{{ f.filename }}</span>
                     </div>
                   </td>
                 </ng-container>
 
                 <ng-container matColumnDef="score">
-                  <th mat-header-cell *matHeaderCellDef>Score Qualité</th>
+                  <th mat-header-cell *matHeaderCellDef>Quality</th>
                   <td mat-cell *matCellDef="let f">
                     @if (f.analyzed) {
                       <div class="score-pill" [class.good]="f.scoreGlobal >= 80" [class.medium]="f.scoreGlobal >= 50 && f.scoreGlobal < 80" [class.poor]="f.scoreGlobal < 50">
                         {{ f.scoreGlobal }}/100
                       </div>
                     } @else {
-                      <span class="not-analyzed-tag">Non analysé</span>
+                      <span class="not-analyzed-tag">Not analyzed</span>
                     }
                   </td>
                 </ng-container>
 
                 <ng-container matColumnDef="debt">
-                  <th mat-header-cell *matHeaderCellDef>Dette Technique</th>
+                  <th mat-header-cell *matHeaderCellDef>Debt</th>
                   <td mat-cell *matCellDef="let f">
                     @if (f.analyzed) {
                       <span class="debt-tag" [class]="'debt-' + f.technicalDebtRating">
-                        {{ f.technicalDebtMinutes }} min ({{ f.technicalDebtRating }})
+                        {{ f.technicalDebtMinutes }}m ({{ f.technicalDebtRating }})
                       </span>
                     } @else {
                       <span class="text-muted">—</span>
@@ -284,13 +290,13 @@
                 </ng-container>
 
                 <ng-container matColumnDef="smells">
-                  <th mat-header-cell *matHeaderCellDef>Code Smells</th>
+                  <th mat-header-cell *matHeaderCellDef>Smells</th>
                   <td mat-cell *matCellDef="let f">
                     @if (f.analyzed) {
                       <div class="smells-count-pill">
-                        <span>{{ f.codeSmellsCount }} smells</span>
+                        <span>{{ f.codeSmellsCount }}</span>
                         @if (f.criticalSmellsCount > 0) {
-                          <span class="crit-badge">{{ f.criticalSmellsCount }} critiques</span>
+                          <span class="crit-badge">{{ f.criticalSmellsCount }}!</span>
                         }
                       </div>
                     } @else {
@@ -300,11 +306,11 @@
                 </ng-container>
 
                 <ng-container matColumnDef="actions">
-                  <th mat-header-cell *matHeaderCellDef class="actions-header"></th>
-                  <td mat-cell *matCellDef="let f" class="actions-cell">
-                    <button mat-flat-button color="primary" (click)="viewFile(f.fileId)" matTooltip="Consulter l'analyse de qualité et les suggestions">
+                  <th mat-header-cell *matHeaderCellDef></th>
+                  <td mat-cell *matCellDef="let f" style="text-align: right;">
+                    <button mat-flat-button color="primary" (click)="viewFile(f.fileId)">
                       <mat-icon>visibility</mat-icon>
-                      <span>{{ f.analyzed ? 'Consulter' : 'Analyser' }}</span>
+                      <span>{{ f.analyzed ? 'View' : 'Analyze' }}</span>
                     </button>
                   </td>
                 </ng-container>
@@ -317,27 +323,25 @@
         </div>
       </mat-tab>
 
-      <!-- Module 3 — Onglet Chatbot IA -->
+      <!-- AI Chatbot Tab -->
       <mat-tab>
         <ng-template mat-tab-label>
           <mat-icon class="tab-icon">smart_toy</mat-icon>
-          <span>Chatbot IA</span>
+          <span>AI Assistant</span>
         </ng-template>
 
-        <div class="files-tab-content chatbot-tab">
-          <div class="table-actions">
-            <h2>Assistant IA — Questions sur le code</h2>
-            <span class="chatbot-hint">Posez vos questions en langage naturel sur le code de ce projet</span>
-          </div>
+        <div class="tab-pane">
           <div class="chatbot-inline-hint">
-            <mat-icon>info_outline</mat-icon>
-            <p>Le chatbot flottant <mat-icon style="font-size:16px;vertical-align:middle">smart_toy</mat-icon> est disponible en bas à droite sur toutes les pages de ce projet.</p>
+            <mat-icon>auto_awesome</mat-icon>
+            <div class="hint-content">
+              <h3>Interactive AI Assistant</h3>
+              <p>The AI Assistant is available as a floating window in the bottom-right corner. You can ask questions about your code, request explanations, or seek help with documentation.</p>
+            </div>
           </div>
         </div>
       </mat-tab>
     </mat-tab-group>
 
-    <!-- Module 3 — Chatbot RAG flottant (disponible depuis project-view) -->
     <app-chatbot [projectId]="+id()"></app-chatbot>
   }
 </div>

@@ -6,6 +6,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
 import { AuthService } from './core/auth/auth.service';
+import { LayoutService } from './core/layout/layout.service';
+import { SidebarComponent } from './core/layout/sidebar/sidebar.component';
 import { CommonModule } from '@angular/common';
 import { signal } from '@angular/core';
 
@@ -20,13 +22,15 @@ import { signal } from '@angular/core';
     MatButtonModule,
     MatIconModule,
     MatMenuModule,
-    MatDividerModule
+    MatDividerModule,
+    SidebarComponent
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
   authService = inject(AuthService);
+  layoutService = inject(LayoutService);
   private router = inject(Router);
   title = 'codedoc-ai-frontend';
 

@@ -1,0 +1,136 @@
+<div class="security-audit-container">
+  <header class="page-header">
+    <div class="header-content">
+      <button mat-icon-button [routerLink]="['/projects', id(), 'files', fileId()]" matTooltip="Back to File">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div class="title-group">
+        <h1>Security Audit</h1>
+        <p class="subtitle" *ngIf="file()">{{ file()?.filename }}</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button mat-stroked-button (click)="showGuide.set(!showGuide())" [color]="showGuide() ? 'accent' : ''">
+        <mat-icon>help_outline</mat-icon>
+        Guide de Sécurité
+      </button>
+      <button mat-flat-button color="primary" (click)="performAudit()" [disabled]="isAiLoading()">
+        <mat-icon>security</mat-icon>
+        {{ audit() ? 'Re-run Audit' : 'Start Audit' }}
+      </button>
+      <button mat-stroked-button *ngIf="audit()" (click)="exportPdf()">
+        <mat-icon>picture_as_pdf</mat-icon>
+        Export PDF
+      </button>
+    </div>
+  </header>
+
+  <mat-progress-bar mode="indeterminate" *ngIf="isAiLoading()"></mat-progress-bar>
+
+  <mat-card class="guide-card" *ngIf="showGuide()">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>library_books</mat-icon>
+        Guide du Lexique de Sécurité
+      </mat-card-title>
+      <button mat-icon-button (click)="showGuide.set(false)" class="close-guide">
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="glossary-grid">
+        <div class="glossary-item" *ngFor="let item of glossary">
+          <strong>{{ item.term }}</strong>
+          <p>{{ item.definition }}</p>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <div class="content-grid" *ngIf="audit() && !isAiLoading(); else noAudit">
+    <div class="summary-section">
+      <mat-card class="score-card">
+        <mat-card-content>
+          <div class="score-display" [ngClass]="getScoreColor(audit()!.securityScore)">
+            <span class="score-label">Security Score</span>
+            <span class="score-value">{{ audit()!.securityScore }}</span>
+          </div>
+          <div class="audit-info">
+            <p><strong>Status:</strong> {{ audit()!.status }}</p>
+            <p><strong>Date:</strong> {{ audit()!.createdAt | date:'medium' }}</p>
+            <p><strong>Vulnerabilities:</strong> {{ audit()!.vulnerabilities.length }}</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="summary-card">
+        <mat-card-header>
+          <mat-card-title>Executive Summary</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <p>{{ audit()!.summary }}</p>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <div class="vulnerabilities-section">
+      <h3>Detected Vulnerabilities</h3>
+      <mat-accordion multi>
+        <mat-expansion-panel *ngFor="let vuln of audit()!.vulnerabilities">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              <mat-chip [ngClass]="getSeverityColor(vuln.severity)">{{ vuln.severity }}</mat-chip>
+              <span class="vuln-type">{{ vuln.type }}</span>
+            </mat-panel-title>
+            <mat-panel-description>
+              {{ vuln.fileName }} : Line {{ vuln.line }}
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <div class="vuln-details">
+            <div class="detail-group">
+              <h4>Description</h4>
+              <p>{{ vuln.description }}</p>
+            </div>
+            <div class="detail-group">
+              <h4>Consequences</h4>
+              <p>{{ vuln.consequences }}</p>
+            </div>
+            <div class="detail-group">
+              <h4>Recommended Fix</h4>
+              <p>{{ vuln.fix }}</p>
+              <mat-chip *ngIf="vuln.cweId" class="cwe-chip" matTooltip="CWE (Common Weakness Enumeration) est un identifiant universel pour ce type de faille de sécurité.">
+                <mat-icon>info</mat-icon>
+                CWE: {{ vuln.cweId }}
+              </mat-chip>
+            </div>
+
+            <div class="diff-container" *ngIf="vuln.correctedCode">
+              <h4>Proposed Correction</h4>
+              <app-code-viewer 
+                [code]="vuln.correctedCode" 
+                [language]="file()?.language || 'text'">
+              </app-code-viewer>
+            </div>
+          </div>
+        </mat-expansion-panel>
+      </mat-accordion>
+
+      <div class="no-vulns" *ngIf="audit()!.vulnerabilities.length === 0">
+        <mat-icon>check_circle</mat-icon>
+        <p>No vulnerabilities detected. Good job!</p>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #noAudit>
+    <div class="empty-state" *ngIf="!isAiLoading()">
+      <mat-icon>security</mat-icon>
+      <h2>No Security Audit Found</h2>
+      <p>Start an audit to analyze this file for vulnerabilities and security smells.</p>
+      <button mat-flat-button color="primary" (click)="performAudit()">
+        Start Initial Audit
+      </button>
+    </div>
+  </ng-template>
+</div>

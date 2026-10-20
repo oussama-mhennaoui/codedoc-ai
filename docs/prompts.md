@@ -25,3 +25,11 @@ This document lists the prompts used by CodeDoc AI to interact with LLMs. All pr
 - **Version:** `v1`
 - **File:** `summarize_project_v1.txt`
 - **Purpose:** Looks across multiple source code files within a given project to construct a high-level summary. Identifies main architectures, key modules, and the overall objective of the codebase.
+
+## 5. Analyze Quality & Code Smells (Module 1)
+- **Name:** `analyze_quality`
+- **Version:** `v1`
+- **File:** `analyze_quality_v1.txt`
+- **JSON Schema:** `backend/src/main/resources/schemas/analyze_quality_schema.json`
+- **Purpose:** Analyzes source code for global quality (score 0-100), detects localized code smells (file + line number) with prioritized refactoring actions (critique/moyen/faible), evaluates SOLID principles adherence, code duplication, and technical debt estimation in minutes.
+

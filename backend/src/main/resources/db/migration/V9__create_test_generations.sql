@@ -1,4 +1,4 @@
--- V6__create_test_generations.sql
+-- V9__create_test_generations.sql
 CREATE TABLE test_generations (
     id              BIGSERIAL PRIMARY KEY,
     user_id         BIGINT       NOT NULL,

@@ -1,0 +1,175 @@
+<!-- Bouton flottant pour ouvrir le chatbot -->
+<button
+  id="chatbot-toggle-btn"
+  class="chat-fab"
+  [class.open]="isOpen()"
+  (click)="toggleChat()"
+  matTooltip="Assistant IA du codebase"
+  matTooltipPosition="left">
+  <mat-icon>{{ isOpen() ? 'close' : 'smart_toy' }}</mat-icon>
+</button>
+
+<!-- Panel chatbot -->
+@if (isOpen()) {
+  <div class="chat-panel" id="chatbot-panel">
+
+    <!-- Header -->
+    <div class="chat-header">
+      <div class="chat-header-left">
+        <div class="chat-avatar">
+          <mat-icon>smart_toy</mat-icon>
+        </div>
+        <div>
+          <h3>Assistant IA</h3>
+          <span class="chat-subtitle">Expert du codebase</span>
+        </div>
+      </div>
+      <div class="chat-header-actions">
+        <button mat-icon-button (click)="openHistory()" matTooltip="Historique des conversations" id="chatbot-history-btn">
+          <mat-icon>history</mat-icon>
+        </button>
+        <button mat-icon-button (click)="newConversation()" matTooltip="Nouvelle conversation" id="chatbot-new-btn">
+          <mat-icon>add_comment</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <!-- Historique des conversations -->
+    @if (showHistory()) {
+      <div class="history-panel">
+        <div class="history-header">
+          <span>Conversations récentes</span>
+          <button mat-icon-button (click)="showHistory.set(false)">
+            <mat-icon>arrow_back</mat-icon>
+          </button>
+        </div>
+        @if (conversations().length === 0) {
+          <div class="history-empty">
+            <mat-icon>chat_bubble_outline</mat-icon>
+            <p>Aucune conversation</p>
+          </div>
+        }
+        @for (conv of conversations(); track conv.id) {
+          <div class="history-item" (click)="loadConversation(conv)" id="chatbot-conv-{{ conv.id }}">
+            <mat-icon class="history-icon">chat</mat-icon>
+            <div class="history-item-content">
+              <span class="history-title">{{ conv.title }}</span>
+              <span class="history-meta">{{ conv.messageCount }} messages · {{ conv.updatedAt | date:'dd/MM HH:mm' }}</span>
+            </div>
+            <button mat-icon-button color="warn" (click)="deleteConversation($event, conv.id)" matTooltip="Supprimer">
+              <mat-icon>delete_outline</mat-icon>
+            </button>
+          </div>
+        }
+      </div>
+    } @else {
+
+      <!-- Zone de messages -->
+      <div class="messages-container" #messagesContainer id="chatbot-messages">
+
+        <!-- État vide : questions suggérées -->
+        @if (messages().length === 0 && !isLoading()) {
+          <div class="welcome-state">
+            <div class="welcome-icon">
+              <mat-icon>auto_awesome</mat-icon>
+            </div>
+            <h4>Comment puis-je vous aider ?</h4>
+            <p>Posez une question sur le code de ce projet</p>
+            <div class="suggestions">
+              @for (q of suggestedQuestions(); track q) {
+                <button class="suggestion-chip" (click)="useSuggestion(q)" id="suggestion-{{ $index }}">
+                  {{ q }}
+                </button>
+              }
+            </div>
+          </div>
+        }
+
+        <!-- Messages -->
+        @for (msg of messages(); track $index; let i = $index) {
+          <div class="message" [class.user]="msg.role === 'USER'" [class.assistant]="msg.role === 'ASSISTANT'">
+            @if (msg.role === 'ASSISTANT') {
+              <div class="msg-avatar">
+                <mat-icon>smart_toy</mat-icon>
+              </div>
+            }
+            <div class="msg-bubble">
+              <p class="msg-content" [innerHTML]="msg.content"></p>
+
+              <!-- Citations de sources -->
+              @if (msg.sources && msg.sources.length > 0) {
+                <div class="sources-section">
+                  <button class="sources-toggle" (click)="toggleSources(i)" id="sources-toggle-{{ i }}">
+                    <mat-icon>{{ isSourceExpanded(i) ? 'expand_less' : 'code' }}</mat-icon>
+                    {{ msg.sources.length }} source{{ msg.sources.length > 1 ? 's' : '' }} citée{{ msg.sources.length > 1 ? 's' : '' }}
+                  </button>
+                  @if (isSourceExpanded(i)) {
+                    <div class="sources-list">
+                      @for (src of msg.sources; track src.filename) {
+                        <div class="source-item">
+                          <div class="source-header">
+                            <mat-icon>insert_drive_file</mat-icon>
+                            <span class="source-ref">{{ formatSource(src) }}</span>
+                          </div>
+                          <pre class="source-snippet"><code>{{ src.snippet }}</code></pre>
+                        </div>
+                      }
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+            @if (msg.role === 'USER') {
+              <div class="msg-avatar user-avatar">
+                <mat-icon>person</mat-icon>
+              </div>
+            }
+          </div>
+        }
+
+        <!-- Indicateur de chargement -->
+        @if (isLoading()) {
+          <div class="message assistant">
+            <div class="msg-avatar">
+              <mat-icon>smart_toy</mat-icon>
+            </div>
+            <div class="msg-bubble typing-indicator">
+              <span></span><span></span><span></span>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Suggestions rapides (si conversation commencée) -->
+      @if (messages().length > 0 && messages().length < 3) {
+        <div class="quick-suggestions">
+          @for (q of suggestedQuestions().slice(0, 3); track q) {
+            <button class="quick-chip" (click)="useSuggestion(q)">{{ q }}</button>
+          }
+        </div>
+      }
+
+      <!-- Zone de saisie -->
+      <div class="input-area">
+        <textarea
+          id="chatbot-input"
+          class="chat-input"
+          [value]="userInput()"
+          (input)="userInput.set($any($event.target).value)"
+          (keydown)="onKeydown($event)"
+          placeholder="Posez votre question sur le code..."
+          rows="1"
+          [disabled]="isLoading()">
+        </textarea>
+        <button
+          id="chatbot-send-btn"
+          class="send-btn"
+          (click)="sendMessage()"
+          [disabled]="!userInput() || isLoading()"
+          matTooltip="Envoyer (Entrée)">
+          <mat-icon>send</mat-icon>
+        </button>
+      </div>
+    }
+  </div>
+}

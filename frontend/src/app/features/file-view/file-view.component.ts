@@ -15,6 +15,7 @@ import { DocService } from '../../core/api/doc.service';
 import { SourceFileDetail } from '../../core/models/source-file.model';
 import { GeneratedDoc } from '../../core/models/doc.model';
 import { CodeViewerComponent } from '../../shared/components/code-viewer/code-viewer.component';
+import { ChatbotComponent } from '../chatbot/chatbot.component';
 import { finalize } from 'rxjs';
 
 @Component({
@@ -31,7 +32,8 @@ import { finalize } from 'rxjs';
     MatTooltipModule,
     MatProgressSpinnerModule,
     MatDialogModule,
-    CodeViewerComponent
+    CodeViewerComponent,
+    ChatbotComponent
   ],
   templateUrl: './file-view.component.html',
   styleUrl: './file-view.component.scss',
@@ -53,6 +55,8 @@ export class FileViewComponent implements OnInit {
   isAiLoading = signal(false);
   docId = signal<string | null>(null);
   complexityResult = signal<{score: string, details: string} | null>(null);
+  // Module 3 — Chatbot
+  explainQuestion = signal<string | null>(null);
 
   @ViewChild('complexityDialog') complexityDialog!: TemplateRef<any>;
 
@@ -161,6 +165,12 @@ export class FileViewComponent implements OnInit {
       },
       error: (err) => this.handleAiError(err)
     });
+  }
+
+  // Module 3 — Lance le chatbot avec une question pré-remplie sur ce fichier
+  explainWithAI() {
+    const filename = this.file()?.filename ?? 'ce fichier';
+    this.explainQuestion.set(`Explique la logique et les fonctions principales de ${filename}`);
   }
 }
 

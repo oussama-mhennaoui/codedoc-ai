@@ -19,6 +19,7 @@ import { GeneratedDoc } from '../../core/models/doc.model';
 import { QualityReport } from '../../core/models/quality.model';
 import { CodeViewerComponent } from '../../shared/components/code-viewer/code-viewer.component';
 import { QualityAnalysisPanelComponent } from '../../shared/components/quality-analysis-panel/quality-analysis-panel.component';
+import { ChatbotComponent } from '../chatbot/chatbot.component';
 import { finalize } from 'rxjs';
 
 @Component({
@@ -37,7 +38,8 @@ import { finalize } from 'rxjs';
     MatDialogModule,
     MatTabsModule,
     CodeViewerComponent,
-    QualityAnalysisPanelComponent
+    QualityAnalysisPanelComponent,
+    ChatbotComponent
   ],
   templateUrl: './file-view.component.html',
   styleUrl: './file-view.component.scss',
@@ -54,15 +56,17 @@ export class FileViewComponent implements OnInit {
 
   id = input.required<string>(); // Project ID
   fileId = input.required<string>(); // File ID
-  
+
   file = signal<SourceFileDetail | null>(null);
   isLoading = signal(false);
   isAiLoading = signal(false);
   isQualityLoading = signal(false);
   qualityReport = signal<QualityReport | null>(null);
   docId = signal<string | null>(null);
-  complexityResult = signal<{score: string, details: string} | null>(null);
+  complexityResult = signal<{ score: string, details: string } | null>(null);
   selectedTabIndex = signal<number>(0);
+  // Module 3 — Chatbot
+  explainQuestion = signal<string | null>(null);
 
   @ViewChild('complexityDialog') complexityDialog!: TemplateRef<any>;
 
@@ -75,7 +79,7 @@ export class FileViewComponent implements OnInit {
   checkExistingDoc() {
     const projectId = this.id();
     const fileId = this.fileId();
-    
+
     this.docService.listByProject(projectId).subscribe({
       next: (docs: GeneratedDoc[]) => {
         const existing = docs.find(d => String(d.sourceFileId) === fileId);
@@ -164,9 +168,9 @@ export class FileViewComponent implements OnInit {
   private handleAiError(err: any) {
     const status = err?.status || 0;
     const errorBody = err?.error || {};
-    
+
     let msg = 'Failed to process AI request';
-    
+
     if (status === 0) {
       msg = 'Network error: Cannot reach the server';
     } else if (status === 429) {
@@ -178,7 +182,7 @@ export class FileViewComponent implements OnInit {
     } else if (status === 500 && errorBody.error === 'missing_api_key') {
       msg = 'Server configuration error: Missing AI API key.';
     }
-    
+
     this.snackBar.open(msg, 'Close', { duration: 5000, panelClass: ['error-snackbar'] });
   }
 
@@ -222,5 +226,11 @@ export class FileViewComponent implements OnInit {
       },
       error: (err) => this.handleAiError(err)
     });
+  }
+
+  // Module 3 — Lance le chatbot avec une question pré-remplie sur ce fichier
+  explainWithAI() {
+    const filename = this.file()?.filename ?? 'ce fichier';
+    this.explainQuestion.set(`Explique la logique et les fonctions principales de ${filename}`);
   }
 }

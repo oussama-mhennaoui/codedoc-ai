@@ -316,6 +316,28 @@
           }
         </div>
       </mat-tab>
+
+      <!-- Module 3 — Onglet Chatbot IA -->
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon class="tab-icon">smart_toy</mat-icon>
+          <span>Chatbot IA</span>
+        </ng-template>
+
+        <div class="files-tab-content chatbot-tab">
+          <div class="table-actions">
+            <h2>Assistant IA — Questions sur le code</h2>
+            <span class="chatbot-hint">Posez vos questions en langage naturel sur le code de ce projet</span>
+          </div>
+          <div class="chatbot-inline-hint">
+            <mat-icon>info_outline</mat-icon>
+            <p>Le chatbot flottant <mat-icon style="font-size:16px;vertical-align:middle">smart_toy</mat-icon> est disponible en bas à droite sur toutes les pages de ce projet.</p>
+          </div>
+        </div>
+      </mat-tab>
     </mat-tab-group>
+
+    <!-- Module 3 — Chatbot RAG flottant (disponible depuis project-view) -->
+    <app-chatbot [projectId]="+id()"></app-chatbot>
   }
 </div>

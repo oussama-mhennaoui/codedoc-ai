@@ -20,6 +20,7 @@ import { GeneratedDoc } from '../../core/models/doc.model';
 import { ProjectQualitySummary } from '../../core/models/quality.model';
 import { ProjectFormDialogComponent } from '../dashboard/project-form-dialog.component';
 import { FileUploadDialogComponent } from './file-upload-dialog.component';
+import { ChatbotComponent } from '../chatbot/chatbot.component';
 import { Router } from '@angular/router';
 
 @Component({
@@ -36,7 +37,8 @@ import { Router } from '@angular/router';
     MatCardModule,
     MatTabsModule,
     MatTableModule,
-    MatTooltipModule
+    MatTooltipModule,
+    ChatbotComponent
   ],
   templateUrl: './project-view.component.html',
   styleUrl: './project-view.component.scss',

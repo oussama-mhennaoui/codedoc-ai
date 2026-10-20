@@ -33,7 +33,19 @@
             <span>{{ qualityReport() ? 'Réanalyser Qualité' : 'Analyser Qualité' }}</span>
           }
         </button>
-
+        <button mat-stroked-button color="warn" [routerLink]="['/projects', id(), 'files', fileId(), 'audit']" matTooltip="Perform security audit">
+          <mat-icon>security</mat-icon>
+          Security Audit
+        </button>
+        <button mat-stroked-button color="primary" (click)="detectComplexity()" [disabled]="isAiLoading()" matTooltip="Analyze code complexity">
+          <mat-icon>psychology</mat-icon>
+          Detect Complexity
+        </button>
+        <!-- Module 3 — Bouton Expliquer avec l'IA -->
+        <button id="explain-with-ai-btn" mat-stroked-button (click)="explainWithAI()" matTooltip="Poser une question sur ce fichier à l'IA">
+          <mat-icon>smart_toy</mat-icon>
+          Expliquer avec l'IA
+        </button>
         @if (docId()) {
           <button mat-stroked-button color="primary" [routerLink]="['/docs', docId()]" matTooltip="Voir la documentation technique">
             <mat-icon>menu_book</mat-icon>
@@ -114,3 +126,11 @@
     <button mat-button mat-dialog-close>Fermer</button>
   </mat-dialog-actions>
 </ng-template>
+
+<!-- Module 3 — Chatbot RAG flottant -->
+@if (file()) {
+  <app-chatbot
+    [projectId]="+id()"
+    [initialQuestion]="explainQuestion()">
+  </app-chatbot>
+}

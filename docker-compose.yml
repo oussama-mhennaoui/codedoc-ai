@@ -21,12 +21,13 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: codedoc-backend
+    restart: on-failure
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/codedoc
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-codedoc}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-codedoc}
-      OPENAI_API_KEY: ${OPENAI_API_KEY}
-      JWT_SECRET: ${JWT_SECRET}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      JWT_SECRET: ${JWT_SECRET:-codedoc-dev-secret-32-chars-minimum-ok}
       SPRING_PROFILES_ACTIVE: dev
     ports:
       - "8081:8081"
@@ -37,11 +38,11 @@ services:
   frontend:
     build: ./frontend
     container_name: codedoc-frontend
+    restart: on-failure
     ports:
       - "4200:4200"
     environment:
       - NODE_ENV=development
-      - CHROME_DRIVER_BIN=/usr/bin/chromium-browser
     depends_on:
       - backend
 

@@ -13,9 +13,11 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { ProjectService } from '../../core/api/project.service';
 import { FileService } from '../../core/api/file.service';
 import { DocService } from '../../core/api/doc.service';
+import { QualityService } from '../../core/api/quality.service';
 import { Project } from '../../core/models/project.model';
 import { SourceFile } from '../../core/models/source-file.model';
 import { GeneratedDoc } from '../../core/models/doc.model';
+import { ProjectQualitySummary } from '../../core/models/quality.model';
 import { ProjectFormDialogComponent } from '../dashboard/project-form-dialog.component';
 import { FileUploadDialogComponent } from './file-upload-dialog.component';
 import { ChatbotComponent } from '../chatbot/chatbot.component';
@@ -46,6 +48,7 @@ export class ProjectViewComponent implements OnInit {
   private projectService = inject(ProjectService);
   private fileService = inject(FileService);
   private docService = inject(DocService);
+  private qualityService = inject(QualityService);
   private dialog = inject(MatDialog);
   private snackBar = inject(MatSnackBar);
   private router = inject(Router);
@@ -55,17 +58,21 @@ export class ProjectViewComponent implements OnInit {
   project = signal<Project | null>(null);
   files = signal<SourceFile[]>([]);
   docs = signal<GeneratedDoc[]>([]);
+  qualitySummary = signal<ProjectQualitySummary | null>(null);
   isLoading = signal(false);
   isFilesLoading = signal(false);
   isDocsLoading = signal(false);
+  isQualityLoading = signal(false);
   
   displayedColumns: string[] = ['filename', 'language', 'size', 'uploadedAt', 'actions'];
   docsColumns: string[] = ['filename', 'status', 'model', 'createdAt', 'actions'];
+  qualityColumns: string[] = ['filename', 'score', 'debt', 'smells', 'actions'];
 
   ngOnInit() {
     this.loadProject();
     this.loadFiles();
     this.loadDocs();
+    this.loadQualitySummary();
   }
 
   loadProject() {
@@ -91,13 +98,29 @@ export class ProjectViewComponent implements OnInit {
 
     this.isFilesLoading.set(true);
     this.fileService.listForProject(projectId).subscribe({
-      next: (data) => {
+      next: (data: SourceFile[]) => {
         this.files.set(data);
         this.isFilesLoading.set(false);
       },
       error: () => {
         this.isFilesLoading.set(false);
         this.snackBar.open('Error loading files', 'Close', { duration: 3000 });
+      }
+    });
+  }
+
+  loadQualitySummary() {
+    const projectId = parseInt(this.id(), 10);
+    if (isNaN(projectId)) return;
+
+    this.isQualityLoading.set(true);
+    this.qualityService.getProjectSummary(projectId).subscribe({
+      next: (data) => {
+        this.qualitySummary.set(data);
+        this.isQualityLoading.set(false);
+      },
+      error: () => {
+        this.isQualityLoading.set(false);
       }
     });
   }
@@ -136,6 +159,7 @@ export class ProjectViewComponent implements OnInit {
         this.fileService.create(projectId, result).subscribe({
           next: () => {
             this.loadFiles();
+            this.loadQualitySummary();
             this.snackBar.open('File uploaded successfully', 'Close', { duration: 3000 });
           },
           error: (error) => {
@@ -149,8 +173,7 @@ export class ProjectViewComponent implements OnInit {
 
   loadDocs() {
     this.isDocsLoading.set(true);
-    this.docService.listByProject(this.id()).pipe(
-    ).subscribe({
+    this.docService.listByProject(this.id()).subscribe({
       next: (data) => {
         this.docs.set(data);
         this.isDocsLoading.set(false);
@@ -188,6 +211,7 @@ export class ProjectViewComponent implements OnInit {
       this.fileService.remove(fileId).subscribe({
         next: () => {
           this.loadFiles();
+          this.loadQualitySummary();
           this.snackBar.open('File deleted', 'Close', { duration: 3000 });
         },
         error: () => this.snackBar.open('Error deleting file', 'Close', { duration: 3000 })

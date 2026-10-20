@@ -32,6 +32,10 @@ public class GlobalExceptionHandler {
 
         return buildErrorResponse(HttpStatus.UNPROCESSABLE_ENTITY, "Validation failed", request, fieldErrors);
     }
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiError> handleIllegalArgument(IllegalArgumentException ex, HttpServletRequest request) {
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), request, null);
+    }
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ApiError> handleConstraintViolation(ConstraintViolationException ex, HttpServletRequest request) {

@@ -40,6 +40,11 @@ public class User implements UserDetails {
     private Instant createdAt;
 
     @Override
+    public String getUsername() {
+        return username;
+    }
+
+    @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }

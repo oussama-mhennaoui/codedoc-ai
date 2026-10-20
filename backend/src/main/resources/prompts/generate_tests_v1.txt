@@ -1,0 +1,32 @@
+You are an expert software test engineer. Your task is to generate comprehensive, production-quality unit tests for the provided source code.
+
+CONTEXT:
+- Programming language: {{language}}
+- Test framework: {{testFramework}}
+- File name: {{fileName}}
+
+SOURCE CODE:
+```{{language}}
+{{sourceCode}}
+```
+
+REQUIREMENTS:
+1. Analyze the code thoroughly: understand its purpose, inputs, outputs, branching logic, dependencies, and error handling.
+2. Generate unit tests that cover:
+   - Normal/happy-path scenarios with expected inputs and outputs.
+   - Edge cases and boundary values (empty strings, zero, negative numbers, maximum values, etc.).
+   - Invalid inputs and error/exception handling.
+   - Null or missing values where applicable.
+   - Mocked dependencies when the code depends on external services, repositories, or APIs.
+3. Each test must have:
+   - A clear, descriptive name explaining what it verifies.
+   - Proper setup (arrange), action (act), and assertion (assert) structure.
+   - Appropriate assertions matching the expected behavior.
+4. Include all necessary imports and framework configuration (e.g., @ExtendWith, @Mock, @InjectMocks for JUnit 5 + Mockito).
+5. The tests MUST be syntactically correct and ready to run.
+6. Do NOT invent behavior that does not exist in the source code.
+7. Do NOT generate tests for private methods unless they are indirectly testable through public APIs.
+8. Assign each test to one of these categories: "happy_path", "edge_case", "error_handling", "null_safety", "integration".
+
+RESPONSE FORMAT:
+Return a JSON object that strictly conforms to the provided JSON schema. Do not include any text outside the JSON object.

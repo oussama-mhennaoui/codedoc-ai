@@ -1,0 +1,281 @@
+<div class="quality-panel">
+  <!-- Top Bar -->
+  <div class="panel-header">
+    <div class="header-left">
+      <div class="title-with-badge">
+        <mat-icon class="panel-icon">verified</mat-icon>
+        <h2>Qualité du Code & Code Smells</h2>
+      </div>
+      <p class="subtitle">Analyse statique augmentée par IA, principes SOLID & estimation de dette technique</p>
+    </div>
+
+    <div class="header-actions">
+      @if (report()) {
+        <button mat-stroked-button [matMenuTriggerFor]="exportMenu" matTooltip="Exporter le rapport d'analyse">
+          <mat-icon>file_download</mat-icon>
+          Exporter
+          <mat-icon iconPositionEnd>arrow_drop_down</mat-icon>
+        </button>
+        <mat-menu #exportMenu="matMenu">
+          <button mat-menu-item (click)="exportPdf.emit()">
+            <mat-icon color="warn">picture_as_pdf</mat-icon>
+            <span>Rapport PDF</span>
+          </button>
+          <button mat-menu-item (click)="exportMarkdown.emit()">
+            <mat-icon color="primary">description</mat-icon>
+            <span>Rapport Markdown (.md)</span>
+          </button>
+        </mat-menu>
+      }
+
+      <button mat-flat-button color="primary" (click)="analyze.emit()" [disabled]="isLoading()">
+        @if (isLoading()) {
+          <mat-spinner diameter="18" class="inline-spinner"></mat-spinner>
+          <span>Analyse en cours...</span>
+        } @else {
+          <mat-icon>refresh</mat-icon>
+          <span>{{ report() ? 'Réanalyser' : 'Analyser la qualité' }}</span>
+        }
+      </button>
+    </div>
+  </div>
+
+  @if (isLoading()) {
+    <div class="loading-state">
+      <mat-progress-bar mode="indeterminate" class="animated-progress"></mat-progress-bar>
+      <div class="loading-content">
+        <mat-icon class="pulse-icon">psychology</mat-icon>
+        <p>L'IA analyse le code : calcul du score, détection des code smells et évaluation SOLID...</p>
+      </div>
+    </div>
+  } @else {
+    @if (report(); as rep) {
+      <!-- Score & Overview Grid -->
+      <div class="overview-grid">
+      <!-- Global Score Card -->
+      <div class="score-card" [ngClass]="scoreColorClass()">
+        <div class="score-header">
+          <span class="card-label">Score Global de Qualité</span>
+          <span class="score-badge">{{ scoreLabel() }}</span>
+        </div>
+        <div class="score-display">
+          <div class="big-score">{{ rep.scoreGlobal }}</div>
+          <div class="score-max">/ 100</div>
+        </div>
+        <div class="progress-wrap">
+          <mat-progress-bar
+            mode="determinate"
+            [value]="rep.scoreGlobal"
+            [ngClass]="scoreColorClass()">
+          </mat-progress-bar>
+        </div>
+        <div class="score-footer">
+          <span>0 (Critique)</span>
+          <span>100 (Parfait)</span>
+        </div>
+      </div>
+
+      <!-- Technical Debt Card -->
+      <div class="metric-card debt-card">
+        <div class="metric-header">
+          <span class="card-label">Dette Technique</span>
+          <span class="debt-chip" [ngClass]="debtBadgeClass()">{{ rep.technicalDebtRating | uppercase }}</span>
+        </div>
+        <div class="debt-value">
+          <mat-icon class="debt-icon">hourglass_top</mat-icon>
+          <div class="debt-text">
+            <span class="big-metric">{{ rep.technicalDebtMinutes }}</span>
+            <span class="metric-unit">minutes estimées</span>
+          </div>
+        </div>
+        @if (rep.detteTechnique.resume) {
+          <p class="metric-desc">{{ rep.detteTechnique.resume }}</p>
+        }
+      </div>
+
+      <!-- Complexity & Duplication Card -->
+      <div class="metric-card stats-card">
+        <div class="metric-header">
+          <span class="card-label">Complexité & Duplication</span>
+        </div>
+        <div class="stats-row">
+          <div class="stat-item">
+            <span class="stat-num">{{ rep.complexite.score_cyclomatique }}</span>
+            <span class="stat-name">Cyclomatique</span>
+          </div>
+          <div class="stat-separator"></div>
+          <div class="stat-item">
+            <span class="stat-num">{{ rep.complexite.score_cognitif }}</span>
+            <span class="stat-name">Charge cognitive</span>
+          </div>
+          <div class="stat-separator"></div>
+          <div class="stat-item">
+            <span class="stat-num">{{ rep.duplication.pourcentage_estime }}%</span>
+            <span class="stat-name">Duplication</span>
+          </div>
+        </div>
+        @if (rep.complexite.details) {
+          <p class="metric-desc">{{ rep.complexite.details }}</p>
+        }
+      </div>
+    </div>
+
+    <!-- SOLID Principles Overview -->
+    @if (rep.respectSolid; as solid) {
+      <div class="solid-card">
+        <div class="solid-header">
+          <div class="solid-title">
+            <mat-icon>shield</mat-icon>
+            <h3>Conformité aux Principes SOLID</h3>
+          </div>
+          @if (solid.resume) {
+            <span class="solid-summary">{{ solid.resume }}</span>
+          }
+        </div>
+        <div class="solid-grid">
+          <div class="solid-item">
+            <div class="solid-letter">S</div>
+            <div class="solid-info">
+              <strong>Single Responsibility</strong>
+              <p>{{ solid.srp }}</p>
+            </div>
+          </div>
+          <div class="solid-item">
+            <div class="solid-letter">O</div>
+            <div class="solid-info">
+              <strong>Open/Closed</strong>
+              <p>{{ solid.ocp }}</p>
+            </div>
+          </div>
+          <div class="solid-item">
+            <div class="solid-letter">L</div>
+            <div class="solid-info">
+              <strong>Liskov Substitution</strong>
+              <p>{{ solid.lsp }}</p>
+            </div>
+          </div>
+          <div class="solid-item">
+            <div class="solid-letter">I</div>
+            <div class="solid-info">
+              <strong>Interface Segregation</strong>
+              <p>{{ solid.isp }}</p>
+            </div>
+          </div>
+          <div class="solid-item">
+            <div class="solid-letter">D</div>
+            <div class="solid-info">
+              <strong>Dependency Inversion</strong>
+              <p>{{ solid.dip }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Code Smells Section -->
+    <div class="smells-section">
+      <div class="smells-header">
+        <div class="smells-title">
+          <mat-icon>pest_control</mat-icon>
+          <h3>Code Smells Détectés</h3>
+          <span class="smell-total-badge">{{ rep.codeSmells.length }}</span>
+        </div>
+
+        <!-- Filter Chips -->
+        <div class="filter-chips">
+          <button
+            type="button"
+            class="filter-chip"
+            [class.active]="filterSeverity() === 'all'"
+            (click)="setFilter('all')">
+            Tous ({{ rep.codeSmells.length }})
+          </button>
+          <button
+            type="button"
+            class="filter-chip chip-critique"
+            [class.active]="filterSeverity() === 'critique'"
+            (click)="setFilter('critique')">
+            <span class="dot"></span>
+            Critique ({{ criticalCount() }})
+          </button>
+          <button
+            type="button"
+            class="filter-chip chip-moyen"
+            [class.active]="filterSeverity() === 'moyen'"
+            (click)="setFilter('moyen')">
+            <span class="dot"></span>
+            Moyen ({{ mediumCount() }})
+          </button>
+          <button
+            type="button"
+            class="filter-chip chip-faible"
+            [class.active]="filterSeverity() === 'faible'"
+            (click)="setFilter('faible')">
+            <span class="dot"></span>
+            Faible ({{ lowCount() }})
+          </button>
+        </div>
+      </div>
+
+      <!-- Smells List -->
+      @if (filteredSmells().length > 0) {
+        <div class="smells-list">
+          @for (smell of filteredSmells(); track smell.type + smell.ligne) {
+            <div class="smell-card" [ngClass]="'severity-' + (smell.gravite | lowercase)">
+              <div class="smell-card-header">
+                <div class="smell-left">
+                  <span class="severity-badge" [ngClass]="'badge-' + (smell.gravite | lowercase)">
+                    {{ smell.gravite | uppercase }}
+                  </span>
+                  <span class="smell-type">{{ smell.type }}</span>
+                </div>
+                <button
+                  mat-stroked-button
+                  class="location-button"
+                  (click)="onLineClick(smell.ligne)"
+                  matTooltip="Localiser dans le code">
+                  <mat-icon>place</mat-icon>
+                  Ligne {{ smell.ligne }}
+                </button>
+              </div>
+
+              <p class="smell-description">{{ smell.description }}</p>
+
+              <!-- Refactoring Suggestion -->
+              <div class="refactoring-suggestion">
+                <div class="suggestion-header">
+                  <mat-icon>auto_fix_high</mat-icon>
+                  <strong>Suggestion de Refactoring :</strong>
+                </div>
+                <p class="suggestion-text">{{ smell.suggestionRefactoring }}</p>
+              </div>
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="empty-filter-state">
+          <mat-icon>check_circle</mat-icon>
+          <p>Aucun code smell correspondant au filtre sélectionné.</p>
+        </div>
+      }
+    </div>
+  } @else {
+    <!-- Empty State -->
+    <div class="empty-panel">
+      <div class="empty-icon-box">
+        <mat-icon>analytics</mat-icon>
+      </div>
+      <h3>Aucune analyse de qualité effectuée</h3>
+      <p>
+        Lancez une analyse statique augmentée par IA pour évaluer le score de maintenabilité,
+        détecter les code smells (fonctions trop longues, violations SOLID, duplication)
+        et obtenir des suggestions de refactoring priorisées.
+      </p>
+      <button mat-flat-button color="primary" (click)="analyze.emit()" [disabled]="isLoading()">
+        <mat-icon>auto_awesome</mat-icon>
+        Lancer l'analyse de qualité
+      </button>
+    </div>
+  }
+}
+</div>

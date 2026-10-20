@@ -124,6 +124,12 @@ CodeDoc AI separates standard CRUD operations from its core intelligence layer. 
 - `POST /api/ai/generate-doc` - Trigger documentation generation for a file
 - `POST /api/ai/detect-complexity` - Trigger complexity detection for a file
 
+#### Quality & Code Smells Analysis (Module 1)
+- `POST /api/quality/analyze` - Trigger code smells, SOLID & quality analysis for a file
+- `GET /api/quality/files/{fileId}` - Get quality analysis report for a file
+- `GET /api/quality/projects/{projectId}/summary` - Get aggregated project quality & technical debt summary
+- `GET /api/quality/reports/{id}/export?format={pdf|md}` - Export quality report to PDF or Markdown
+
 #### Documentation Management
 - `GET /api/docs/{id}` - Fetch a generated document
 - `PATCH /api/docs/{id}` - Update document title or status
@@ -148,6 +154,7 @@ The database strictly enforces relationships and cascaded deletions.
 5. **`doc_sections`**: The parsed, structured sections of documentation. Linked to a `generated_doc`.
 6. **`comments`**: User comments threaded on a `doc_section`.
 7. **`ai_logs`**: Audit trail of AI executions tracking token usage and latencies.
+8. **`quality_reports`**: Quality analysis reports (score global 0-100, code smells, SOLID principles, technical debt minutes and rating, JSONB raw analysis) linked 1-to-1 with `source_files`.
 
 ## 🖼️ Screenshots
 

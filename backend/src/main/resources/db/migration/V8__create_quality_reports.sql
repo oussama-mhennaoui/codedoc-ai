@@ -1,4 +1,4 @@
--- V6__create_quality_reports.sql
+-- V8__create_quality_reports.sql
 CREATE TABLE quality_reports (
     id BIGSERIAL PRIMARY KEY,
     source_file_id BIGINT NOT NULL,

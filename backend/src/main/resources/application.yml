@@ -22,7 +22,7 @@ spring:
 
 llm:
   api-key: ${OPENAI_API_KEY:}
-  model: openai/gpt-4o-mini
+  model: cohere/north-mini-code:free
   base-url: https://openrouter.ai/api/v1
 
 security:

@@ -37,12 +37,17 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
       
-      - name: Run SonarCloud analysis
+      - name: Verify Java 21 is active
+        run: java -version
+      
+      - name: Run SonarCloud analysis with explicit Java 21
         working-directory: ./backend
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
+          export PATH="$JAVA_HOME_21_X64/bin:$PATH"
+          java -version
           mvn -B sonar:sonar \
             -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} \
             -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}

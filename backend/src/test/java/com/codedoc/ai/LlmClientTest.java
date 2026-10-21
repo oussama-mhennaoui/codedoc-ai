@@ -45,11 +45,12 @@ class LlmClientTest {
         responseNode.put("id", "chatcmpl-123");
         responseNode.putObject("usage").put("total_tokens", 50);
         
-        // Add choices array with message content
+        // Add choices array with message content as valid JSON string
         ObjectNode choiceNode = objectMapper.createObjectNode();
         ObjectNode messageNode = objectMapper.createObjectNode();
         messageNode.put("role", "assistant");
-        messageNode.put("content", "Hello! This is a test response.");
+        // The content must be a JSON string that LlmClient will parse
+        messageNode.put("content", "{\"result\":\"success\",\"message\":\"Hello from AI\"}");
         choiceNode.set("message", messageNode);
         choiceNode.put("index", 0);
         choiceNode.put("finish_reason", "stop");
@@ -66,9 +67,8 @@ class LlmClientTest {
 
         assertThat(response).isNotNull();
         assertThat(response.totalTokens()).isEqualTo(50);
-        assertThat(response.data().get("id").asText()).isEqualTo("chatcmpl-123");
-        assertThat(response.data().get("choices").get(0).get("message").get("content").asText())
-                .isEqualTo("Hello! This is a test response.");
+        assertThat(response.data().get("result").asText()).isEqualTo("success");
+        assertThat(response.data().get("message").asText()).isEqualTo("Hello from AI");
         server.verify();
     }
 

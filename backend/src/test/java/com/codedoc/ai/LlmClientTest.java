@@ -67,7 +67,8 @@ class LlmClientTest {
         assertThat(response).isNotNull();
         assertThat(response.totalTokens()).isEqualTo(50);
         assertThat(response.data().get("id").asText()).isEqualTo("chatcmpl-123");
-        assertThat(response.content()).isEqualTo("Hello! This is a test response.");
+        assertThat(response.data().get("choices").get(0).get("message").get("content").asText())
+                .isEqualTo("Hello! This is a test response.");
         server.verify();
     }
 

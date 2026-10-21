@@ -40,10 +40,21 @@ class LlmClientTest {
 
     @Test
     void call_ShouldReturnResponse_WhenSuccessful() throws Exception {
-        // Prepare response
+        // Prepare response with choices array containing message content
         ObjectNode responseNode = objectMapper.createObjectNode();
         responseNode.put("id", "chatcmpl-123");
         responseNode.putObject("usage").put("total_tokens", 50);
+        
+        // Add choices array with message content
+        ObjectNode choiceNode = objectMapper.createObjectNode();
+        ObjectNode messageNode = objectMapper.createObjectNode();
+        messageNode.put("role", "assistant");
+        messageNode.put("content", "Hello! This is a test response.");
+        choiceNode.set("message", messageNode);
+        choiceNode.put("index", 0);
+        choiceNode.put("finish_reason", "stop");
+        
+        responseNode.putArray("choices").add(choiceNode);
         
         server.expect(requestTo(BASE_URL + "/chat/completions"))
                 .andExpect(method(org.springframework.http.HttpMethod.POST))
@@ -56,6 +67,7 @@ class LlmClientTest {
         assertThat(response).isNotNull();
         assertThat(response.totalTokens()).isEqualTo(50);
         assertThat(response.data().get("id").asText()).isEqualTo("chatcmpl-123");
+        assertThat(response.content()).isEqualTo("Hello! This is a test response.");
         server.verify();
     }
 
